@@ -1,0 +1,23 @@
+version: '1.0'
+
+services:
+  project:
+    build: ./
+    container_name: 'mission-project'
+    networks:
+      - mission-gateway_mission
+      - database_network
+    ports:
+      - 8083:80
+    environment:
+      POSTGRES_HOST: mission-postgres-project
+      POSTGRES_PORT: 5000
+      POSTGRES_DATABASE: mission-project
+      POSTGRES_SCHEMA: public
+      POSTGRES_PASSWORD: private_password
+      POSTGRES_USERNAME: postgres
+networks:
+  mission-gateway_mission:
+    external: true
+  database_network:
+    external: true
