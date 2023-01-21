@@ -10,7 +10,7 @@ import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
  * Конвертер [JsonMap] -> [Json]
  * @property objectMapper Маппер JSON
  */
-internal class MapToJsonDbConverter(
+class MapToJsonDbConverter(
     private val objectMapper: ObjectMapper
 ) : Converter<JsonMap, Json> {
 
@@ -23,7 +23,7 @@ internal class MapToJsonDbConverter(
  * Конвертер [Json] -> [JsonMap]
  * @property objectMapper Маппер JSON
  */
-internal class DbJsonToMapConverter(
+class DbJsonToMapConverter(
     private val objectMapper: ObjectMapper
 ) : Converter<Json, JsonMap> {
 

@@ -1,0 +1,25 @@
+### Создание проекта
+POST http://localhost:80/project/private/admin/create
+Content-Type: application/json
+
+{
+  "title": "tit3le",
+  "description": "description"
+}
+
+### Поиск проекта по id
+GET http://localhost:80/project/private/admin/find?id=cc774936f22f4328bd9dfb79fab4ec55
+
+### Закрепить команду за проектом
+POST http://localhost:80/project/private/admin/attach
+Content-Type: application/json
+
+{
+  "project": "d13933cbf4d34ec99e0d254295ea3730",
+  "participants": [
+    "id"
+  ]
+}
+
+### Поиск команды по id проекта
+GET http://localhost:80/project/private/admin/team?project=d13933cbf4d34ec99e0d254295ea3730
