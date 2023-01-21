@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import ru.kyamshanov.mission.project.missionproject.dto.AttachTeamRqDto
 import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRqDto
 import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRsDto
+import ru.kyamshanov.mission.project.missionproject.dto.GetTeamRsDto
 import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
+import ru.kyamshanov.mission.project.missionproject.models.Team
 import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorService
+import ru.kyamshanov.mission.project.missionproject.service.TeamService
 
 /**
  * Контроллер для end-point`ов админ. задач
@@ -20,7 +24,8 @@ import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorServic
 @RestController
 @RequestMapping("/project/private/admin")
 class AdminController @Autowired constructor(
-    private val projectCreatorService: ProjectCreatorService
+    private val projectCreatorService: ProjectCreatorService,
+    private val teamService: TeamService
 ) {
 
     @PostMapping("create")
@@ -50,5 +55,21 @@ class AdminController @Autowired constructor(
             )
         }
         return ResponseEntity(responseModel, HttpStatus.OK)
+    }
+
+    @PostMapping("attach")
+    suspend fun attachTeam(
+        @RequestBody(required = true) body: AttachTeamRqDto
+    ): ResponseEntity<Unit> {
+        teamService.attachTeam(body.project, Team(body.participants))
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @GetMapping("team")
+    suspend fun attachTeam(
+        @RequestParam(required = true, value = "project") projectId: String
+    ): ResponseEntity<GetTeamRsDto> {
+        val response = GetTeamRsDto(projectId, teamService.getTeam(projectId).participants)
+        return ResponseEntity(response,HttpStatus.OK)
     }
 }
