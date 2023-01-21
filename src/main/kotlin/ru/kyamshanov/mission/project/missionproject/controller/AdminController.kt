@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import ru.kyamshanov.mission.project.missionproject.dto.AttachTeamRqDto
-import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRqDto
-import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRsDto
-import ru.kyamshanov.mission.project.missionproject.dto.GetTeamRsDto
+import ru.kyamshanov.mission.project.missionproject.dto.*
+import ru.kyamshanov.mission.project.missionproject.models.Participant
 import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
 import ru.kyamshanov.mission.project.missionproject.models.Team
 import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorService
@@ -61,7 +59,8 @@ class AdminController @Autowired constructor(
     suspend fun attachTeam(
         @RequestBody(required = true) body: AttachTeamRqDto
     ): ResponseEntity<Unit> {
-        teamService.attachTeam(body.project, Team(body.participants))
+        val team = Team(body.participants.map { userId -> Participant(userId, Participant.Role.PARTICIPANT) })
+        teamService.attachTeam(body.project, team)
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -70,6 +69,14 @@ class AdminController @Autowired constructor(
         @RequestParam(required = true, value = "project") projectId: String
     ): ResponseEntity<GetTeamRsDto> {
         val response = GetTeamRsDto(projectId, teamService.getTeam(projectId).participants)
-        return ResponseEntity(response,HttpStatus.OK)
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("role")
+    suspend fun setRole(
+        @RequestBody(required = true) body: SetRoleRqDto
+    ): ResponseEntity<Unit> {
+        teamService.addParticipant(body.projectId, Participant(body.userId, body.role))
+        return ResponseEntity(HttpStatus.OK)
     }
 }

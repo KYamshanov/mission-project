@@ -10,6 +10,7 @@ data class ProjectEntity(
     val title: String,
     @Column("description")
     val description: String,
+    /** Первичный ключ - Идентификатор */
     @Id
     @Column("id")
     private val givenId: String? = null

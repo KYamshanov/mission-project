@@ -11,7 +11,8 @@ data class ParticipantEntity(
     val projectId: String,
     @Column("external_user_id")
     val userId: String,
-
+    @Column("participant_role")
+    val role: ParticipantRole?,
     /** Первичный ключ - Идентификатор */
     @Id
     @Column("id")

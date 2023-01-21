@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import ru.kyamshanov.mission.project.missionproject.converter.DbJsonToMapConverter
 import ru.kyamshanov.mission.project.missionproject.converter.MapToJsonDbConverter
+import ru.kyamshanov.mission.project.missionproject.converter.ParticipantRoleConverter
 import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
+import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
 
 /**
  * Конфигурация конвертеров
@@ -29,4 +31,8 @@ class ConverterConfiguration {
     @Bean
     fun jsonStringToMapConverter(objectMapper: ObjectMapper): Converter<Json, JsonMap> =
         DbJsonToMapConverter(objectMapper)
+
+    @Bean
+    fun participantRoleConverter(): Converter<ParticipantRole, ParticipantRole> =
+        ParticipantRoleConverter()
 }

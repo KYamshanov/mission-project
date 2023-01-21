@@ -4,6 +4,7 @@ import io.r2dbc.pool.ConnectionPool
 import io.r2dbc.pool.ConnectionPoolConfiguration
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration
 import io.r2dbc.postgresql.PostgresqlConnectionFactory
+import io.r2dbc.postgresql.codec.EnumCodec
 import io.r2dbc.postgresql.codec.Json
 import io.r2dbc.spi.ConnectionFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +18,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
+import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
 import java.time.Duration
 
 
@@ -49,6 +51,7 @@ class PostgresConfiguration @Autowired constructor(
     private val username: String,
     private val jsonMapStringToMapConverter: Converter<Json, JsonMap>,
     private val mapToJsonStringConverterMap: Converter<JsonMap, Json>,
+    private val participantRoleConverter: Converter<ParticipantRole, ParticipantRole>
 ) : AbstractR2dbcConfiguration() {
 
     @Bean
@@ -61,6 +64,9 @@ class PostgresConfiguration @Autowired constructor(
                 .username(username)
                 .password(password)
                 .schema(schema)
+                .codecRegistrar(
+                    EnumCodec.builder().withEnum("participants_role", ParticipantRole::class.java).build()
+                )
                 .build()
         ).let {
             ConnectionPoolConfiguration.builder(it)
@@ -76,6 +82,7 @@ class PostgresConfiguration @Autowired constructor(
         mutableListOf<Any>().apply {
             add(jsonMapStringToMapConverter)
             add(mapToJsonStringConverterMap)
+            add(participantRoleConverter)
         }.let {
             R2dbcCustomConversions(storeConversions, it)
         }
