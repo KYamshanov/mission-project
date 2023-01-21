@@ -4,7 +4,7 @@ package ru.kyamshanov.mission.project.missionproject.entity
  * Коробка для конвертации [Map]<key - [String], value - [Any]> в соответствующий JSON
  * @property map Мапа для конвертации в JSON
  */
-internal class JsonMap(val map: Map<String, Any>) {
+class JsonMap(val map: Map<String, Any>) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

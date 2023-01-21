@@ -34,7 +34,7 @@ import java.time.Duration
 @Configuration
 @EnableR2dbcRepositories
 @EnableTransactionManagement
-internal class PostgresConfiguration @Autowired constructor(
+class PostgresConfiguration @Autowired constructor(
     @Value("\${POSTGRES_HOST}")
     private val host: String,
     @Value("\${POSTGRES_PORT}")

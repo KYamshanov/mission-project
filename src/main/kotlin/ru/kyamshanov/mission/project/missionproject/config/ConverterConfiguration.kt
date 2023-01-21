@@ -15,7 +15,7 @@ import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
  * Конфигурация конвертеров
  */
 @Configuration
-internal class ConverterConfiguration {
+class ConverterConfiguration {
 
     @Bean
     fun objectMapper(): ObjectMapper = jacksonObjectMapper().apply {

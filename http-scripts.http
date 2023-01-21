@@ -1,0 +1,11 @@
+### Создание проекта
+POST http://localhost:80/project/private/admin/create
+Content-Type: application/json
+
+{
+  "title": "tit3le",
+  "description": "description"
+}
+
+### Поиск проекта по id
+GET http://localhost:80/project/private/admin/find?id=cc774936f22f4328bd9dfb79fab4ec55
