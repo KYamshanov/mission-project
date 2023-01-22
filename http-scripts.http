@@ -33,3 +33,18 @@ Content-Type: application/json
   "userId": "id2",
   "role": "LEADER"
 }
+
+### Изменить роль участника команды
+POST http://localhost:80/project/private/admin/stage
+Content-Type: application/json
+
+{
+  "projectId": "ffe5b5301fcf4977a73d61072d5c2ba4",
+  "stage": "FINISHING"
+}
+
+### Изменить роль участника команды
+GET http://localhost:80/project/private/admin/stage?project=ffe5b5301fcf4977a73d61072d5c2ba4
+
+### Изменить роль участника команды
+GET http://localhost:80/project/private/admin/stage/history?project=ffe5b5301fcf4977a73d61072d5c2ba4

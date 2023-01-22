@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.Participant
 import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
+import ru.kyamshanov.mission.project.missionproject.models.ProjectStage
 import ru.kyamshanov.mission.project.missionproject.models.Team
 import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorService
+import ru.kyamshanov.mission.project.missionproject.service.ProjectStageService
 import ru.kyamshanov.mission.project.missionproject.service.TeamService
 
 /**
@@ -23,7 +25,8 @@ import ru.kyamshanov.mission.project.missionproject.service.TeamService
 @RequestMapping("/project/private/admin")
 class AdminController @Autowired constructor(
     private val projectCreatorService: ProjectCreatorService,
-    private val teamService: TeamService
+    private val teamService: TeamService,
+    private val stageService: ProjectStageService
 ) {
 
     @PostMapping("create")
@@ -78,5 +81,29 @@ class AdminController @Autowired constructor(
     ): ResponseEntity<Unit> {
         teamService.addParticipant(body.projectId, Participant(body.userId, body.role))
         return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("stage")
+    suspend fun setStage(
+        @RequestBody(required = true) body: SetStageRqDto
+    ): ResponseEntity<Unit> {
+        stageService.setProjectStage(body.projectId, ProjectStage(body.stage))
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @GetMapping("stage")
+    suspend fun getStage(
+        @RequestParam(required = true, value = "project") id: String
+    ): ResponseEntity<ProjectStageRsDto> {
+        val response = ProjectStageRsDto(stageService.getProjectStage(id).toDto())
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("stage/history")
+    suspend fun getStageHistory(
+        @RequestParam(required = true, value = "project") id: String
+    ): ResponseEntity<HistoryRsDto> {
+        val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
+        return ResponseEntity(response, HttpStatus.OK)
     }
 }

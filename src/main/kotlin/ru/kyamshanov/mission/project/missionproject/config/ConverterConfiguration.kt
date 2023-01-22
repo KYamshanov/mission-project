@@ -10,8 +10,11 @@ import org.springframework.core.convert.converter.Converter
 import ru.kyamshanov.mission.project.missionproject.converter.DbJsonToMapConverter
 import ru.kyamshanov.mission.project.missionproject.converter.MapToJsonDbConverter
 import ru.kyamshanov.mission.project.missionproject.converter.ParticipantRoleConverter
+import ru.kyamshanov.mission.project.missionproject.converter.ProjectStageConverter
 import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
 import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
+import ru.kyamshanov.mission.project.missionproject.entity.ProjectStageType
+
 
 /**
  * Конфигурация конвертеров
@@ -35,4 +38,8 @@ class ConverterConfiguration {
     @Bean
     fun participantRoleConverter(): Converter<ParticipantRole, ParticipantRole> =
         ParticipantRoleConverter()
+
+    @Bean
+    fun projectStageConverter(): Converter<ProjectStageType, ProjectStageType> =
+        ProjectStageConverter()
 }

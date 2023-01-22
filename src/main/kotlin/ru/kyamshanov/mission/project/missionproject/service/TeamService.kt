@@ -1,11 +1,11 @@
 package ru.kyamshanov.mission.project.missionproject.service
 
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toCollection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.entity.ParticipantEntity
-import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
 import ru.kyamshanov.mission.project.missionproject.entity.toEntity
 import ru.kyamshanov.mission.project.missionproject.entity.toModel
 import ru.kyamshanov.mission.project.missionproject.models.Participant
@@ -40,7 +40,8 @@ class TeamServiceImpl @Autowired constructor(
 
     @Transactional
     override suspend fun addParticipant(projectId: String, participant: Participant) {
-        val foundParticipant = participantCrudRepository.findFirstByProjectIdAndUserId(projectId, participant.userId)
+        val foundParticipant =
+            participantCrudRepository.findFirstByProjectIdAndUserId(projectId, participant.userId).firstOrNull()
         val savingEntity = ParticipantEntity(
             projectId = projectId,
             userId = participant.userId,
