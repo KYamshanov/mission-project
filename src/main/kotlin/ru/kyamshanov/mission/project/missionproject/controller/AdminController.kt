@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.kyamshanov.mission.project.missionproject.dto.*
-import ru.kyamshanov.mission.project.missionproject.models.Participant
-import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
-import ru.kyamshanov.mission.project.missionproject.models.ProjectStage
-import ru.kyamshanov.mission.project.missionproject.models.Team
+import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorService
 import ru.kyamshanov.mission.project.missionproject.service.ProjectStageService
+import ru.kyamshanov.mission.project.missionproject.service.TaskService
 import ru.kyamshanov.mission.project.missionproject.service.TeamService
 
 /**
@@ -26,7 +24,8 @@ import ru.kyamshanov.mission.project.missionproject.service.TeamService
 class AdminController @Autowired constructor(
     private val projectCreatorService: ProjectCreatorService,
     private val teamService: TeamService,
-    private val stageService: ProjectStageService
+    private val stageService: ProjectStageService,
+    private val taskService: TaskService
 ) {
 
     @PostMapping("create")
@@ -104,6 +103,49 @@ class AdminController @Autowired constructor(
         @RequestParam(required = true, value = "project") id: String
     ): ResponseEntity<HistoryRsDto> {
         val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("task/create")
+    suspend fun createTask(
+        @RequestBody(required = true) body: CreateTaskRqDto
+    ): ResponseEntity<CreateTaskRsDto> {
+        val taskModel = TaskModel(
+            projectId = body.projectId,
+            title = body.title,
+            text = body.text
+        )
+        val response = taskService.createTask(taskModel)
+            .let {
+                CreateTaskRsDto(
+                    taskId = requireNotNull(it.id) { "Saved task (title: ${body.title} has id equal null." },
+                    createdAt = it.createAt
+                )
+            }
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("task/get")
+    suspend fun getTask(
+        @RequestParam(required = true, value = "task") taskId: String
+    ): ResponseEntity<GetTaskRsDto> {
+        val response = taskService.getTask(taskId)
+            .let {
+                GetTaskRsDto(
+                    title = it.title,
+                    text = it.text,
+                    createdAt = it.createAt
+                )
+            }
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("task/get/all")
+    suspend fun getAllTasks(
+        @RequestParam(required = true, value = "project") projectId: String
+    ): ResponseEntity<GetTasksRsDto> {
+        val response = taskService.getLightTasks(projectId)
+            .map { it.id }.let { GetTasksRsDto(it) }
         return ResponseEntity(response, HttpStatus.OK)
     }
 }

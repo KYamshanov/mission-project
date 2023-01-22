@@ -1,8 +1,6 @@
 package ru.kyamshanov.mission.project.missionproject.entity
 
-import ru.kyamshanov.mission.project.missionproject.models.Participant
-import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
-import ru.kyamshanov.mission.project.missionproject.models.ProjectStage
+import ru.kyamshanov.mission.project.missionproject.models.*
 
 
 /* ---Model to Entity ---- */
@@ -40,6 +38,14 @@ fun ProjectStage.toEntity(projectId: String) = StageHistoryEntity(
     updatedAt = createdAt
 )
 
+fun TaskModel.toEntity() = TaskEntity(
+    projectId = projectId,
+    title = title,
+    createAt = createAt,
+    text = text,
+    givenId = id
+)
+
 /* ---- Entity to Model ---- */
 
 fun ParticipantEntity.toModel() = Participant(
@@ -71,4 +77,17 @@ fun ProjectStageType.toModel(): ProjectStage.Stage = when (this) {
 fun StageHistoryEntity.toModel() = ProjectStage(
     stage = stage.toModel(),
     createdAt = updatedAt
+)
+
+fun TaskEntity.toModel() = TaskModel(
+    id = id,
+    projectId = projectId,
+    title = title,
+    text = text,
+    createAt = createAt
+)
+
+fun LightTaskEntity.toModel() = LightTaskModel(
+    id = id,
+    title = title
 )

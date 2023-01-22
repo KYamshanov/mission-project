@@ -32,5 +32,14 @@ CREATE TABLE stage_history
     id         VARCHAR(50) PRIMARY KEY,
     project_id VARCHAR(50)   NOT NULL REFERENCES projects (id),
     stage      project_stage not null,
-    updatedAt  TIMESTAMPTZ          not null
+    updatedAt  TIMESTAMPTZ   not null
+);
+
+CREATE TABLE tasks
+(
+    id         VARCHAR(50) PRIMARY KEY,
+    project_id VARCHAR(50) NOT NULL REFERENCES projects (id),
+    title      VARCHAR(64) NOT NULL,
+    text       TEXT        NOT NULL,
+    create_at  TIMESTAMPTZ not null
 )

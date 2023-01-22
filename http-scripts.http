@@ -17,7 +17,8 @@ Content-Type: application/json
 {
   "project": "f886730375004f82aa33e6c114f5d305",
   "participants": [
-    "id","id2"
+    "id",
+    "id2"
   ]
 }
 
@@ -34,7 +35,7 @@ Content-Type: application/json
   "role": "LEADER"
 }
 
-### Изменить роль участника команды
+### Изменить Стадию проекта
 POST http://localhost:80/project/private/admin/stage
 Content-Type: application/json
 
@@ -43,8 +44,24 @@ Content-Type: application/json
   "stage": "FINISHING"
 }
 
-### Изменить роль участника команды
+### Получить стадию проекта
 GET http://localhost:80/project/private/admin/stage?project=ffe5b5301fcf4977a73d61072d5c2ba4
 
-### Изменить роль участника команды
+### Получить историю изменения стадии
 GET http://localhost:80/project/private/admin/stage/history?project=ffe5b5301fcf4977a73d61072d5c2ba4
+
+### Создать задачу проекту
+POST http://localhost:80/project/private/admin/task/create
+Content-Type: application/json
+
+{
+  "projectId": "b84005cee5424b1297c44642b4e64c56",
+  "title": "FINISHING",
+  "text": "text"
+}
+
+### Получить список id-задач проекта
+GET http://localhost:80/project/private/admin/task/get/all?project=b84005cee5424b1297c44642b4e64c56
+
+### Получить задачу по id
+GET http://localhost:80/project/private/admin/task/get?task=73995114d0a8461a9a5f5c359d8f5edc
