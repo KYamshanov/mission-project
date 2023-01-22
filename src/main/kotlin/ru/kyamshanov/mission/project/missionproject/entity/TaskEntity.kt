@@ -3,16 +3,18 @@ package ru.kyamshanov.mission.project.missionproject.entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.time.LocalDateTime
 
-@Table("participants")
-data class ParticipantEntity(
-
+@Table("tasks")
+data class TaskEntity(
     @Column("project_id")
     val projectId: String,
-    @Column("external_user_id")
-    val userId: String,
-    @Column("participant_role")
-    val role: ParticipantRole?,
+    @Column("title")
+    val title: String,
+    @Column("text")
+    val text: String,
+    @Column("create_at")
+    val createAt: LocalDateTime,
     /** Первичный ключ - Идентификатор */
     @Id
     @Column("id")

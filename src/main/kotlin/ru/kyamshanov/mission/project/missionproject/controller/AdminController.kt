@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import ru.kyamshanov.mission.project.missionproject.dto.AttachTeamRqDto
-import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRqDto
-import ru.kyamshanov.mission.project.missionproject.dto.CreateProjectRsDto
-import ru.kyamshanov.mission.project.missionproject.dto.GetTeamRsDto
-import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
-import ru.kyamshanov.mission.project.missionproject.models.Team
+import ru.kyamshanov.mission.project.missionproject.dto.*
+import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.service.ProjectCreatorService
+import ru.kyamshanov.mission.project.missionproject.service.ProjectStageService
+import ru.kyamshanov.mission.project.missionproject.service.TaskService
 import ru.kyamshanov.mission.project.missionproject.service.TeamService
 
 /**
@@ -25,7 +23,9 @@ import ru.kyamshanov.mission.project.missionproject.service.TeamService
 @RequestMapping("/project/private/admin")
 class AdminController @Autowired constructor(
     private val projectCreatorService: ProjectCreatorService,
-    private val teamService: TeamService
+    private val teamService: TeamService,
+    private val stageService: ProjectStageService,
+    private val taskService: TaskService
 ) {
 
     @PostMapping("create")
@@ -61,7 +61,8 @@ class AdminController @Autowired constructor(
     suspend fun attachTeam(
         @RequestBody(required = true) body: AttachTeamRqDto
     ): ResponseEntity<Unit> {
-        teamService.attachTeam(body.project, Team(body.participants))
+        val team = Team(body.participants.map { userId -> Participant(userId, Participant.Role.PARTICIPANT) })
+        teamService.attachTeam(body.project, team)
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -70,6 +71,81 @@ class AdminController @Autowired constructor(
         @RequestParam(required = true, value = "project") projectId: String
     ): ResponseEntity<GetTeamRsDto> {
         val response = GetTeamRsDto(projectId, teamService.getTeam(projectId).participants)
-        return ResponseEntity(response,HttpStatus.OK)
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("role")
+    suspend fun setRole(
+        @RequestBody(required = true) body: SetRoleRqDto
+    ): ResponseEntity<Unit> {
+        teamService.addParticipant(body.projectId, Participant(body.userId, body.role))
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("stage")
+    suspend fun setStage(
+        @RequestBody(required = true) body: SetStageRqDto
+    ): ResponseEntity<Unit> {
+        stageService.setProjectStage(body.projectId, ProjectStage(body.stage))
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @GetMapping("stage")
+    suspend fun getStage(
+        @RequestParam(required = true, value = "project") id: String
+    ): ResponseEntity<ProjectStageRsDto> {
+        val response = ProjectStageRsDto(stageService.getProjectStage(id).toDto())
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("stage/history")
+    suspend fun getStageHistory(
+        @RequestParam(required = true, value = "project") id: String
+    ): ResponseEntity<HistoryRsDto> {
+        val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("task/create")
+    suspend fun createTask(
+        @RequestBody(required = true) body: CreateTaskRqDto
+    ): ResponseEntity<CreateTaskRsDto> {
+        val taskModel = TaskModel(
+            projectId = body.projectId,
+            title = body.title,
+            text = body.text
+        )
+        val response = taskService.createTask(taskModel)
+            .let {
+                CreateTaskRsDto(
+                    taskId = requireNotNull(it.id) { "Saved task (title: ${body.title} has id equal null." },
+                    createdAt = it.createAt
+                )
+            }
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("task/get")
+    suspend fun getTask(
+        @RequestParam(required = true, value = "task") taskId: String
+    ): ResponseEntity<GetTaskRsDto> {
+        val response = taskService.getTask(taskId)
+            .let {
+                GetTaskRsDto(
+                    title = it.title,
+                    text = it.text,
+                    createdAt = it.createAt
+                )
+            }
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("task/get/all")
+    suspend fun getAllTasks(
+        @RequestParam(required = true, value = "project") projectId: String
+    ): ResponseEntity<GetTasksRsDto> {
+        val response = taskService.getLightTasks(projectId)
+            .map { it.id }.let { GetTasksRsDto(it) }
+        return ResponseEntity(response, HttpStatus.OK)
     }
 }

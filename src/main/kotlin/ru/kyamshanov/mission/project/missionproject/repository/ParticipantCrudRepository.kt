@@ -8,4 +8,6 @@ interface ParticipantCrudRepository : CoroutineCrudRepository<ParticipantEntity,
     suspend fun removeAllByProjectId(projectId: String)
 
     fun findAllByProjectId(projectId: String): Flow<ParticipantEntity>
+
+    fun findFirstByProjectIdAndUserId(projectId: String, userId: String): Flow<ParticipantEntity>
 }
