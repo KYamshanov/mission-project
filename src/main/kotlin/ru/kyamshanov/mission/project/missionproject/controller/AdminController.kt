@@ -20,7 +20,7 @@ import ru.kyamshanov.mission.project.missionproject.service.TeamService
  * Контроллер для end-point`ов админ. задач
  */
 @RestController
-@RequestMapping("/project/private/admin")
+@RequestMapping("/project/private/admin/")
 class AdminController @Autowired constructor(
     private val projectCreatorService: ProjectCreatorService,
     private val teamService: TeamService,
@@ -33,13 +33,9 @@ class AdminController @Autowired constructor(
         @RequestBody(required = true) body: CreateProjectRqDto
     ): ResponseEntity<CreateProjectRsDto> {
         val projectModel = ProjectModel(title = body.title, description = body.description)
-        val responseModel = projectCreatorService.createProject(projectModel).let {
-            CreateProjectRsDto(
-                id = requireNotNull(it.id) { "Saved entity has no Id" },
-                title = it.title,
-                description = it.description
-            )
-        }
+        val responseModel = CreateProjectRsDto(
+            id = requireNotNull(projectCreatorService.createProject(projectModel).id) { "Saved entity has no Id" }
+        )
         return ResponseEntity(responseModel, HttpStatus.OK)
     }
 
@@ -47,13 +43,9 @@ class AdminController @Autowired constructor(
     suspend fun find(
         @RequestParam(required = true, value = "id") id: String
     ): ResponseEntity<CreateProjectRsDto> {
-        val responseModel = projectCreatorService.getProject(id).let {
-            CreateProjectRsDto(
-                id = requireNotNull(it.id) { "Saved entity has no Id" },
-                title = it.title,
-                description = it.description
-            )
-        }
+        val responseModel = CreateProjectRsDto(
+            id = requireNotNull(projectCreatorService.getProject(id).id) { "Saved entity has no Id" }
+        )
         return ResponseEntity(responseModel, HttpStatus.OK)
     }
 
@@ -61,6 +53,7 @@ class AdminController @Autowired constructor(
     suspend fun attachTeam(
         @RequestBody(required = true) body: AttachTeamRqDto
     ): ResponseEntity<Unit> {
+
         val team = Team(body.participants.map { userId -> Participant(userId, Participant.Role.PARTICIPANT) })
         teamService.attachTeam(body.project, team)
         return ResponseEntity(HttpStatus.OK)

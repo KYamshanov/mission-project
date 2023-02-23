@@ -20,8 +20,8 @@ import ru.kyamshanov.mission.project.missionproject.service.TeamService
  * Контроллер для end-point`ов админ. задач
  */
 @RestController
-@RequestMapping("/project/private/")
-class UserProjectController @Autowired constructor(
+@RequestMapping("/project/manager/")
+class ManagerProjectController @Autowired constructor(
     private val projectCreatorService: ProjectCreatorService,
     private val teamService: TeamService,
     private val stageService: ProjectStageService,
@@ -33,11 +33,9 @@ class UserProjectController @Autowired constructor(
         @RequestBody(required = true) body: CreateProjectRqDto
     ): ResponseEntity<CreateProjectRsDto> {
         val projectModel = ProjectModel(title = body.title, description = body.description)
-        val responseModel = projectCreatorService.createProject(projectModel).let {
-            CreateProjectRsDto(
-                id = requireNotNull(it.id) { "Saved entity has no Id" }
-            )
-        }
+        val responseModel = CreateProjectRsDto(
+            id = requireNotNull(projectCreatorService.createProject(projectModel).id) { "Saved entity has no Id" }
+        )
         return ResponseEntity(responseModel, HttpStatus.OK)
     }
 }
