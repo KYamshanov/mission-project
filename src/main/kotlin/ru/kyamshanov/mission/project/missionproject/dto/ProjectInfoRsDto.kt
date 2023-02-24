@@ -1,11 +1,8 @@
 package ru.kyamshanov.mission.project.missionproject.dto
 
-data class CreateProjectRqDto(
+data class ProjectInfoRsDto(
+    val id: String,
     val title: String,
     val description: String
-)
-
-data class CreateProjectRsDto(
-    val id: String
 )
 

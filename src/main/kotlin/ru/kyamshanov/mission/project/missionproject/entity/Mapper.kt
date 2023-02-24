@@ -60,6 +60,11 @@ fun ProjectEntity.toModel() = ProjectModel(
     id = id
 )
 
+fun ProjectEntity.toCreatedProjectInfo() = ShortProjectInfo(
+    id = id,
+    title = title
+)
+
 fun ParticipantRole?.toModel(): Participant.Role = when (this) {
     ParticipantRole.LEADER -> Participant.Role.LEADER
     null -> Participant.Role.PARTICIPANT

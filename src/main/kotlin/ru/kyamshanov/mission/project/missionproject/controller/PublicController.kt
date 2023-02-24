@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -28,6 +29,20 @@ class PublicController @Autowired constructor(
     private val taskService: TaskService
 ) {
 
+    @GetMapping("/{id}")
+    suspend fun findById(
+        @PathVariable(required = true, value = "id") projectId: String
+    ): ResponseEntity<ProjectInfoRsDto> {
+        val responseModel = projectCreatorService.getProject(projectId).run {
+            ProjectInfoRsDto(
+                id = requireNotNull(id) { "Saved entity has no Id" },
+                description = description,
+                title = title
+            )
+        }
+        return ResponseEntity(responseModel, HttpStatus.OK)
+    }
+
     @PostMapping("get/all")
     suspend fun registration(
         @RequestBody(required = true) body: CreateProjectRqDto
@@ -35,9 +50,7 @@ class PublicController @Autowired constructor(
         val projectModel = ProjectModel(title = body.title, description = body.description)
         val responseModel = projectCreatorService.createProject(projectModel).let {
             CreateProjectRsDto(
-                id = requireNotNull(it.id) { "Saved entity has no Id" },
-                title = it.title,
-                description = it.description
+                id = requireNotNull(it.id) { "Saved entity has no Id" }
             )
         }
         return ResponseEntity(responseModel, HttpStatus.OK)
