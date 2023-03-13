@@ -6,13 +6,13 @@ services:
     container_name: 'mission-project'
     networks:
       - mission-gateway_mission
-      - database_database
+      - mission-db_postgres
     ports:
       - 8083:80
     environment:
-      POSTGRES_HOST: postgres-project
+      POSTGRES_HOST: mission-postgres
       POSTGRES_PORT: 5432
-      POSTGRES_DATABASE: mission-project
+      POSTGRES_DATABASE: mission-postgres
       POSTGRES_SCHEMA: public
       POSTGRES_PASSWORD: private_password
       POSTGRES_USERNAME: postgres
@@ -20,5 +20,5 @@ services:
 networks:
   mission-gateway_mission:
     external: true
-  database_database:
+  mission-db_postgres:
     external: true

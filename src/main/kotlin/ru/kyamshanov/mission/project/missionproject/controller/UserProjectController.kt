@@ -27,7 +27,7 @@ class UserProjectController @Autowired constructor(
     private val stageService: ProjectStageService,
     private val taskService: TaskService
 ) {
-
+/*
     @PostMapping("create")
     suspend fun registration(
         @RequestBody(required = true) body: CreateProjectRqDto
@@ -39,5 +39,5 @@ class UserProjectController @Autowired constructor(
             )
         }
         return ResponseEntity(responseModel, HttpStatus.OK)
-    }
+    }*/
 }
