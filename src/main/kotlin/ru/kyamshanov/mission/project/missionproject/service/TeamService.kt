@@ -10,6 +10,7 @@ import ru.kyamshanov.mission.project.missionproject.entity.toEntity
 import ru.kyamshanov.mission.project.missionproject.entity.toModel
 import ru.kyamshanov.mission.project.missionproject.models.Participant
 import ru.kyamshanov.mission.project.missionproject.models.Team
+import ru.kyamshanov.mission.project.missionproject.network.usecase.FetchUsersUseCase
 import ru.kyamshanov.mission.project.missionproject.repository.ParticipantCrudRepository
 
 interface TeamService {
@@ -23,7 +24,8 @@ interface TeamService {
 
 @Service
 class TeamServiceImpl @Autowired constructor(
-    private val participantCrudRepository: ParticipantCrudRepository
+    private val participantCrudRepository: ParticipantCrudRepository,
+    private val fetchUsersUseCase: FetchUsersUseCase
 ) : TeamService {
 
     @Transactional
@@ -36,7 +38,9 @@ class TeamServiceImpl @Autowired constructor(
 
     override suspend fun getTeam(projectId: String): Team =
         participantCrudRepository.findAllByProjectId(projectId).toCollection(mutableListOf())
-            .map { it.toModel() }.let { Team(it) }
+            .map { it.toModel() }
+            .let { Team(it) }
+            .let { fetchUsersUseCase.fetchUserNames(it).getOrNull() ?: it }
 
     @Transactional
     override suspend fun addParticipant(projectId: String, participant: Participant) {

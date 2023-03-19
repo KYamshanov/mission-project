@@ -1,8 +1,8 @@
 package ru.kyamshanov.mission.project.missionproject.dto
 
 data class GetAllProjectsRqDto(
-    val paginationFilter: PaginationFilter,
-    val sortingFilter: SortingFilter
+    val pageIndex: PaginationFilter? = null,
+    val filter: SortingFilter
 ) {
 
     data class PaginationFilter(
@@ -11,6 +11,10 @@ data class GetAllProjectsRqDto(
     )
 
     data class SortingFilter(
-        val byName: Boolean
+        val name: String
     )
 }
+
+data class GetAllProjectsRsDto(
+    val projects: List<ProjectInfoDto>
+)

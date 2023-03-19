@@ -4,6 +4,7 @@ import ru.kyamshanov.mission.project.missionproject.models.Participant
 
 data class ParticipantDto(
     val userId: String,
+    val userLogin: String,
     val role: Role
 ) {
 
@@ -14,6 +15,7 @@ data class ParticipantDto(
 
 internal fun Participant.toDto() = ParticipantDto(
     userId = userId,
+    userLogin = userName,
     role = role.toDto()
 )
 

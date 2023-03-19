@@ -50,7 +50,7 @@ fun TaskModel.toEntity() = TaskEntity(
 
 fun ParticipantEntity.toModel() = Participant(
     userId = userId,
-    role = role.toModel()
+    role = role.toModel(),
 )
 
 

@@ -10,7 +10,7 @@ import ru.kyamshanov.mission.project.missionproject.models.ShortProjectInfo
 import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
 import ru.kyamshanov.mission.project.missionproject.repository.ProjectCrudRepository
 
-interface ProjectCreatorService {
+interface ProjectService {
 
     suspend fun createProject(projectModel: ProjectModel): ShortProjectInfo
 
@@ -19,9 +19,9 @@ interface ProjectCreatorService {
 }
 
 @Service
-private class ProjectCreatorServiceImpl @Autowired constructor(
+private class ProjectServiceImpl @Autowired constructor(
     private val projectCrudRepository: ProjectCrudRepository
-) : ProjectCreatorService {
+) : ProjectService {
     override suspend fun createProject(projectModel: ProjectModel): ShortProjectInfo =
         projectCrudRepository.save(projectModel.toEntity()).toCreatedProjectInfo()
 

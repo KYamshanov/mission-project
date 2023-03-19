@@ -17,6 +17,7 @@ services:
       POSTGRES_PASSWORD: private_password
       POSTGRES_USERNAME: postgres
       APPLICATION_PORT: 80
+      PROFILE_URL: http://profile
 networks:
   mission-gateway_mission:
     external: true
