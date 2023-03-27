@@ -10,6 +10,8 @@ import ru.kyamshanov.mission.project.missionproject.service.ProjectService
 import ru.kyamshanov.mission.project.missionproject.service.ProjectStageService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
 import ru.kyamshanov.mission.project.missionproject.service.TeamService
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 /**
  * Контроллер для end-point`ов админ. задач
@@ -99,17 +101,27 @@ internal class ManagerProjectController @Autowired constructor(
         val taskModel = TaskModel(
             projectId = body.projectId,
             title = body.title,
-            text = body.text
+            text = body.text,
+            createAt = LocalDateTime.now(),
+            startAt = LocalDateTime.ofInstant(body.startAt.toInstant(), ZoneId.systemDefault()),
+            endAt = LocalDateTime.ofInstant(body.endAt.toInstant(), ZoneId.systemDefault()),
+            maxPaints = body.maxPoints,
+            stage = TaskStage.WAIT
         )
-        val response = taskService.createTask(taskModel)
-            .let {
-                CreateTaskRsDto(
-                    taskId = requireNotNull(it.id) { "Saved task (title: ${body.title} has id equal null." },
-                    createdAt = it.createAt
-                )
-            }
+        val response = CreateTaskRsDto(
+            taskId = requireNotNull(taskService.createTask(taskModel).id) { "Saved task (title: ${body.title} has id equal null." },
+        )
         return ResponseEntity(response, HttpStatus.OK)
     }
+
+    /*    @PostMapping("task/set_points")
+        suspend fun setTaskPoint(
+            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+            @RequestBody(required = true) body: SetTaskPointsRqDto
+        ): ResponseEntity<Unit> {
+            taskService.getTask()
+            return ResponseEntity(response, HttpStatus.OK)
+        }*/
 
     private companion object {
         const val USER_ID_HEADER_KEY = "user-id"
