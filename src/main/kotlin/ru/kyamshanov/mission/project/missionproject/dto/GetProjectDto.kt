@@ -16,5 +16,5 @@ data class GetAllProjectsRqDto(
 }
 
 data class GetAllProjectsRsDto(
-    val projects: List<ProjectInfoDto>
+    val projects: List<ShortProjectInfoDto>
 )

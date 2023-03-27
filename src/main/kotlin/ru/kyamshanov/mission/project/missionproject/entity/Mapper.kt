@@ -1,6 +1,7 @@
 package ru.kyamshanov.mission.project.missionproject.entity
 
 import ru.kyamshanov.mission.project.missionproject.models.*
+import kotlin.math.max
 
 
 /* ---Model to Entity ---- */
@@ -43,7 +44,11 @@ fun TaskModel.toEntity() = TaskEntity(
     title = title,
     createAt = createAt,
     text = text,
-    givenId = id
+    givenId = id,
+    startAt = startAt,
+    endAt = endAt,
+    maxPoints = maxPaints,
+    points = points
 )
 
 /* ---- Entity to Model ---- */
@@ -84,12 +89,17 @@ fun StageHistoryEntity.toModel() = ProjectStage(
     createdAt = updatedAt
 )
 
-fun TaskEntity.toModel() = TaskModel(
+fun TaskEntity.toModel(stage: TaskStage) = TaskModel(
     id = id,
     projectId = projectId,
     title = title,
     text = text,
-    createAt = createAt
+    createAt = createAt,
+    stage = stage,
+    startAt = startAt,
+    endAt = endAt,
+    maxPaints = maxPoints,
+    points = points
 )
 
 fun LightTaskEntity.toModel() = LightTaskModel(

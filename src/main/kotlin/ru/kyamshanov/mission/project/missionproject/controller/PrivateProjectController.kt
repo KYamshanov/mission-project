@@ -11,7 +11,6 @@ import ru.kyamshanov.mission.project.missionproject.processor.LoadProcessor
 import ru.kyamshanov.mission.project.missionproject.processor.TeamProcessor
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
-import ru.kyamshanov.mission.project.missionproject.service.TeamService
 
 /**
  * Контроллер для end-point`ов админ. задач
@@ -40,22 +39,8 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestParam(required = true, value = "id") id: String
     ): ResponseEntity<ProjectInfoDto> {
-        val response = projectService.getProject(id).toProjectInfoDto()
+        val response = findingProcessor.getProject(id)
         return ResponseEntity(response, HttpStatus.OK)
-    }
-
-    @GetMapping("/{id}")
-    suspend fun findById(
-        @PathVariable(required = true, value = "id") projectId: String
-    ): ResponseEntity<ProjectInfoDto> {
-        val responseModel = projectService.getProject(projectId).run {
-            ProjectInfoDto(
-                id = requireNotNull(id) { "Saved entity has no Id" },
-                description = description,
-                title = title
-            )
-        }
-        return ResponseEntity(responseModel, HttpStatus.OK)
     }
 
     @GetMapping("team")
@@ -64,7 +49,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestParam(required = true, value = "project") projectId: String
     ): ResponseEntity<GetTeamRsDto> {
         val team = teamProcessor.getTeam(userId, projectId)
-        val response = GetTeamRsDto(projectId, team.participants)
+        val response = GetTeamRsDto(projectId, team.participants.map { it.toDto() })
         return ResponseEntity(response, HttpStatus.OK)
     }
 
@@ -74,11 +59,16 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestParam(required = true, value = "task") taskId: String
     ): ResponseEntity<GetTaskRsDto> {
         val response = taskService.getTask(taskId)
-            .let {
+            .let { taskModel ->
                 GetTaskRsDto(
-                    title = it.title,
-                    text = it.text,
-                    createdAt = it.createAt
+                    title = taskModel.title,
+                    text = taskModel.text,
+                    createdAt = taskModel.createAt,
+                    taskStage = taskModel.stage.toDto(),
+                    startAt = taskModel.startAt,
+                    endAt = taskModel.endAt,
+                    maxPoints = taskModel.maxPaints,
+                    points = taskModel.points
                 )
             }
         return ResponseEntity(response, HttpStatus.OK)
