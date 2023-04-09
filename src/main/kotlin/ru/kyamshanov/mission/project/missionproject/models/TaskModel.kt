@@ -10,7 +10,7 @@ data class TaskModel(
     val stage: TaskStage,
     val startAt: LocalDateTime,
     val endAt: LocalDateTime,
-    val maxPaints: Int,
+    val maxPoints: Int,
     val points: Int = -1,
     val id: String? = null
 )

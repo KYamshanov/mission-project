@@ -67,8 +67,9 @@ internal class PrivateProjectController @Autowired constructor(
                     taskStage = taskModel.stage.toDto(),
                     startAt = taskModel.startAt,
                     endAt = taskModel.endAt,
-                    maxPoints = taskModel.maxPaints,
-                    points = taskModel.points
+                    maxPoints = taskModel.maxPoints,
+                    points = taskModel.points,
+                    id = requireNotNull(taskModel.id)
                 )
             }
         return ResponseEntity(response, HttpStatus.OK)

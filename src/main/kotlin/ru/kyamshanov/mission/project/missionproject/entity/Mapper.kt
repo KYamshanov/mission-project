@@ -1,7 +1,6 @@
 package ru.kyamshanov.mission.project.missionproject.entity
 
 import ru.kyamshanov.mission.project.missionproject.models.*
-import kotlin.math.max
 
 
 /* ---Model to Entity ---- */
@@ -47,7 +46,7 @@ fun TaskModel.toEntity() = TaskEntity(
     givenId = id,
     startAt = startAt,
     endAt = endAt,
-    maxPoints = maxPaints,
+    maxPoints = maxPoints,
     points = points
 )
 
@@ -98,7 +97,7 @@ fun TaskEntity.toModel(stage: TaskStage) = TaskModel(
     stage = stage,
     startAt = startAt,
     endAt = endAt,
-    maxPaints = maxPoints,
+    maxPoints = maxPoints,
     points = points
 )
 
