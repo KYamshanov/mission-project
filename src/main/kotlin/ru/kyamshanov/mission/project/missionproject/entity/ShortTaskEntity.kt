@@ -19,6 +19,8 @@ data class ShortTaskEntity(
     val startAt: LocalDateTime,
     @Column("end_at")
     val endAt: LocalDateTime,
+    @Column("points")
+    val points: Int,
     @Id
     @Column("id")
     private val givenId: String? = null
@@ -28,5 +30,8 @@ fun ShortTaskEntity.toDomain(taskStage: TaskStage) = ShortTaskModel(
     id = id,
     title = title,
     description = text,
-    taskStage = taskStage
+    taskStage = taskStage,
+    startAt = startAt,
+    endAt = endAt,
+    points = points.takeIf { it > 0 }
 )

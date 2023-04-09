@@ -66,6 +66,7 @@ internal class ManagerProjectController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
+/*
     @PostMapping("stage")
     suspend fun setStage(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
@@ -92,6 +93,7 @@ internal class ManagerProjectController @Autowired constructor(
         val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
         return ResponseEntity(response, HttpStatus.OK)
     }
+*/
 
     @PostMapping("task/create")
     suspend fun createTask(
@@ -105,9 +107,13 @@ internal class ManagerProjectController @Autowired constructor(
             createAt = LocalDateTime.now(),
             startAt = LocalDateTime.ofInstant(body.startAt.toInstant(), ZoneId.systemDefault()),
             endAt = LocalDateTime.ofInstant(body.endAt.toInstant(), ZoneId.systemDefault()),
-            maxPaints = body.maxPoints,
+            maxPoints = body.maxPoints,
             stage = TaskStage.WAIT
         )
+
+
+        println("TaskModel ${body.startAt.month}  ${body.endAt.day}")
+
         val response = CreateTaskRsDto(
             taskId = requireNotNull(taskService.createTask(taskModel).id) { "Saved task (title: ${body.title} has id equal null." },
         )
