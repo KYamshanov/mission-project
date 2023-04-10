@@ -3,6 +3,7 @@ package ru.kyamshanov.mission.project.missionproject.service
 import kotlinx.coroutines.flow.toCollection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.entity.*
 import ru.kyamshanov.mission.project.missionproject.exception.TaskException
 import ru.kyamshanov.mission.project.missionproject.models.LightTaskModel
@@ -45,11 +46,10 @@ class TaskServiceImpl @Autowired constructor(
         taskCrudRepository.findById(taskId)?.let { entry -> entry.toModel(resolveStage(entry)) }
             ?: throw TaskException("Task with is $taskId has no found")
 
+    @Transactional
     override suspend fun setTaskPoints(taskId: String, count: Int) {
-        TODO("It has not implementation")
-        /*  val taskStage = resolveStage(requireNotNull(taskCrudRepository.findById(taskId)){ "Stage is absent" })
-          if(  != TaskModel.Stage.FINISHED) throw IllegalStateException("Task is not finished")
-  */
+        val updatedEntitiesCount = taskCrudRepository.setTaskPoints(taskId, count).toCollection(mutableListOf()).count()
+        if (updatedEntitiesCount != 1) throw IllegalStateException("More or less than 1 object has been updated. [$updatedEntitiesCount]")
     }
 
     private fun resolveStage(taskEntity: TaskEntity): TaskStage {

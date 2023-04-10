@@ -66,34 +66,34 @@ internal class ManagerProjectController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-/*
-    @PostMapping("stage")
-    suspend fun setStage(
-        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-        @RequestBody(required = true) body: SetStageRqDto
-    ): ResponseEntity<Unit> {
-        stageService.setProjectStage(body.projectId, ProjectStage(body.stage))
-        return ResponseEntity(HttpStatus.OK)
-    }
+    /*
+        @PostMapping("stage")
+        suspend fun setStage(
+            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+            @RequestBody(required = true) body: SetStageRqDto
+        ): ResponseEntity<Unit> {
+            stageService.setProjectStage(body.projectId, ProjectStage(body.stage))
+            return ResponseEntity(HttpStatus.OK)
+        }
 
-    @GetMapping("stage")
-    suspend fun getStage(
-        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-        @RequestParam(required = true, value = "project") id: String
-    ): ResponseEntity<ProjectStageRsDto> {
-        val response = ProjectStageRsDto(stageService.getProjectStage(id).toDto())
-        return ResponseEntity(response, HttpStatus.OK)
-    }
+        @GetMapping("stage")
+        suspend fun getStage(
+            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+            @RequestParam(required = true, value = "project") id: String
+        ): ResponseEntity<ProjectStageRsDto> {
+            val response = ProjectStageRsDto(stageService.getProjectStage(id).toDto())
+            return ResponseEntity(response, HttpStatus.OK)
+        }
 
-    @GetMapping("stage/history")
-    suspend fun getStageHistory(
-        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-        @RequestParam(required = true, value = "project") id: String
-    ): ResponseEntity<HistoryRsDto> {
-        val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
-        return ResponseEntity(response, HttpStatus.OK)
-    }
-*/
+        @GetMapping("stage/history")
+        suspend fun getStageHistory(
+            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+            @RequestParam(required = true, value = "project") id: String
+        ): ResponseEntity<HistoryRsDto> {
+            val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
+            return ResponseEntity(response, HttpStatus.OK)
+        }
+    */
 
     @PostMapping("task/create")
     suspend fun createTask(
@@ -120,14 +120,14 @@ internal class ManagerProjectController @Autowired constructor(
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    /*    @PostMapping("task/set_points")
-        suspend fun setTaskPoint(
-            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-            @RequestBody(required = true) body: SetTaskPointsRqDto
-        ): ResponseEntity<Unit> {
-            taskService.getTask()
-            return ResponseEntity(response, HttpStatus.OK)
-        }*/
+    @PostMapping("task/set_points")
+    suspend fun setTaskPoint(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: SetTaskPointsRqDto
+    ): ResponseEntity<Unit> {
+        taskService.setTaskPoints(body.taskId, body.points)
+        return ResponseEntity(HttpStatus.OK)
+    }
 
     private companion object {
         const val USER_ID_HEADER_KEY = "user-id"
