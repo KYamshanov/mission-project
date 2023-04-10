@@ -13,6 +13,6 @@ interface TaskCrudRepository : CoroutineCrudRepository<TaskEntity, String> {
     @Query("SELECT id, title, create_at FROM tasks WHERE project_id = :projectId")
     fun findAllLightTasks(projectId: String): Flow<LightTaskEntity>
 
-    @Query("UPDATE tasks SET points = :count WHERE id = :taskId")
-    fun setTaskPoints(taskId: String, count: Int): Flow<LightTaskEntity>
+    @Query("UPDATE tasks SET points = :count WHERE id = :taskId and max_points >= :count RETURNING *;")
+    fun setTaskPoints(taskId: String, count: Int): Flow<TaskEntity>
 }

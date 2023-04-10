@@ -47,8 +47,8 @@ private class FindingProcessorImpl @Autowired constructor(
 
     private fun getProjectStage(restriction: TimeRestriction): ProjectStageDto {
         val nowTime = LocalDateTime.now()
-        return if (restriction.startAt < nowTime) return ProjectStageDto.WAIT
-        else if (restriction.endAt > nowTime) return ProjectStageDto.FINISHED
+        return if (restriction.startAt > nowTime) return ProjectStageDto.WAIT
+        else if (restriction.endAt < nowTime) return ProjectStageDto.FINISHED
         else ProjectStageDto.IN_PROGRESS
     }
 
