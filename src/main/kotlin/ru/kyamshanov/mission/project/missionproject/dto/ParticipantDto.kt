@@ -14,8 +14,8 @@ data class ParticipantDto(
 }
 
 internal fun Participant.toDto() = ParticipantDto(
-    userId = userId,
-    userLogin = userName,
+    userId = userInfo.userId,
+    userLogin = userInfo.userName,
     role = role.toDto()
 )
 

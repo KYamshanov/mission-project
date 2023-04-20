@@ -9,9 +9,9 @@ data class ProjectInfoDto(
     val description: String,
     val currentTask: GetTaskRsDto?,
     @JsonFormat(pattern = "YYYY-MM-dd'T'hh:mm:ss")
-    val startAt: LocalDateTime,
+    val startAt: LocalDateTime?,
     @JsonFormat(pattern = "YYYY-MM-dd'T'hh:mm:ss")
-    val endAt: LocalDateTime,
+    val endAt: LocalDateTime?,
     val stage: ProjectStageDto,
     val tasks: List<ShortTaskDto>
 )

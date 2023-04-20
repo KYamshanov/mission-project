@@ -13,7 +13,7 @@ fun ProjectModel.toEntity() = ProjectEntity(
 
 fun Participant.toEntity(projectId: String, id: String? = null) = ParticipantEntity(
     projectId = projectId,
-    userId = userId,
+    userId = userInfo.userId,
     role = role.toEntity(),
     givenId = id
 )
@@ -53,8 +53,8 @@ fun TaskModel.toEntity() = TaskEntity(
 /* ---- Entity to Model ---- */
 
 fun ParticipantEntity.toModel() = Participant(
-    userId = userId,
     role = role.toModel(),
+    userInfo = UserInfo(userId = userId, userName = "")
 )
 
 

@@ -7,12 +7,13 @@ import ru.kyamshanov.mission.project.missionproject.models.TimeRestriction
 
 interface GetTimeRestrictionUseCase {
 
-    operator fun invoke(tasks: Collection<ShortTaskModel>): TimeRestriction
+    operator fun invoke(tasks: Collection<ShortTaskModel>): TimeRestriction?
 }
 
 @Component
 private class GetTimeRestrictionUseCaseImpl : GetTimeRestrictionUseCase {
-    override fun invoke(tasks: Collection<ShortTaskModel>): TimeRestriction {
+    override fun invoke(tasks: Collection<ShortTaskModel>): TimeRestriction? {
+        if (tasks.isEmpty()) return null
         val endAt = tasks.maxBy { it.endAt }.endAt
         val startAt = tasks.minBy { it.startAt }.startAt
         return TimeRestriction(
