@@ -43,7 +43,12 @@ internal class ManagerProjectController @Autowired constructor(
         @RequestBody(required = true) body: AttachTeamRqDto
     ): ResponseEntity<Unit> {
         val team =
-            Team(body.participants.map { participantId -> Participant(participantId, Participant.Role.PARTICIPANT) })
+            Team(body.participants.map { participantId ->
+                Participant(
+                    role = Participant.Role.PARTICIPANT,
+                    userInfo = UserInfo(userId = participantId, userName = "")
+                )
+            })
         teamService.attachTeam(body.project, team)
         return ResponseEntity(HttpStatus.OK)
     }
@@ -62,7 +67,13 @@ internal class ManagerProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestBody(required = true) body: SetRoleRqDto
     ): ResponseEntity<Unit> {
-        teamService.addParticipant(body.projectId, Participant(body.userId, body.role))
+        teamService.addParticipant(
+            projectId = body.projectId,
+            participant = Participant(
+                role = body.role,
+                userInfo = UserInfo(userId = body.userId, userName = "")
+            )
+        )
         return ResponseEntity(HttpStatus.OK)
     }
 

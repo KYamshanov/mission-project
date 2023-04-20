@@ -1,9 +1,8 @@
 package ru.kyamshanov.mission.project.missionproject.models
 
 data class Participant(
-    val userId: String,
     val role: Role,
-    val userName: String = ""
+    val userInfo : UserInfo
 ) {
 
     enum class Role {

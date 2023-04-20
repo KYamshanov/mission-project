@@ -18,7 +18,7 @@ private class TeamProcessorImpl @Autowired constructor(
 ) : TeamProcessor {
     override suspend fun getTeam(requesting: UserId, projectId: String): Team {
         val team = teamService.getTeam(projectId)
-        if (team.participants.find { it.userId == requesting } == null) throw PermissionsException("Found team has not requesting user")
+        if (team.participants.find { it.userInfo.userId == requesting } == null) throw PermissionsException("Found team has not requesting user")
         return team
     }
 

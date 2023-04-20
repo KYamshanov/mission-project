@@ -7,13 +7,14 @@ import io.r2dbc.postgresql.codec.Json
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
-import ru.kyamshanov.mission.project.missionproject.converter.DbJsonToMapConverter
-import ru.kyamshanov.mission.project.missionproject.converter.MapToJsonDbConverter
+import ru.kyamshanov.mission.project.missionproject.converter.*
 import ru.kyamshanov.mission.project.missionproject.converter.ParticipantRoleConverter
 import ru.kyamshanov.mission.project.missionproject.converter.ProjectStageConverter
+import ru.kyamshanov.mission.project.missionproject.converter.SubtaskStageConverter
 import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
 import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
 import ru.kyamshanov.mission.project.missionproject.entity.ProjectStageType
+import ru.kyamshanov.mission.project.missionproject.entity.SubtaskStage
 
 
 /**
@@ -42,4 +43,7 @@ class ConverterConfiguration {
     @Bean
     fun projectStageConverter(): Converter<ProjectStageType, ProjectStageType> =
         ProjectStageConverter()
+
+    @Bean
+    fun subtaskStageConverter(): Converter<SubtaskStage, SubtaskStage> = SubtaskStageConverter()
 }

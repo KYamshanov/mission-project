@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.kyamshanov.mission.project.missionproject.api.FindingProcessor
+import ru.kyamshanov.mission.project.missionproject.api.SubtaskCreationProcessor
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.processor.LoadProcessor
 import ru.kyamshanov.mission.project.missionproject.processor.TeamProcessor
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
+import ru.kyamshanov.mission.project.missionproject.service.SubtaskService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
 
 /**
@@ -22,7 +24,9 @@ internal class PrivateProjectController @Autowired constructor(
     private val findingProcessor: FindingProcessor,
     private val projectService: ProjectService,
     private val teamProcessor: TeamProcessor,
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val subtaskService: SubtaskService,
+    private val subtaskCreationProcessor: SubtaskCreationProcessor
 ) {
 
     @PostMapping("get/all")
@@ -83,6 +87,43 @@ internal class PrivateProjectController @Autowired constructor(
         val response = taskService.getLightTasks(projectId)
             .map { it.id }.let { GetTasksRsDto(it) }
         return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("subtask")
+    suspend fun createSubtask(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: CreateSubTaskRqDto
+    ): ResponseEntity<CreateSubTaskRsDto> {
+        val response = subtaskCreationProcessor.createSubtask(body)
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("subtasks")
+    suspend fun getSubtaskByTaskId(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestParam(required = true, value = "taskId") taskId: String
+    ): ResponseEntity<GetSubTaskRsDto> {
+        val subtasksList = subtaskService.getSubTasks(taskId)
+        val response = GetSubTaskRsDto(subtasksList.map { it.toDto() })
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @GetMapping("subtask")
+    suspend fun getSubtaskBySubtaskId(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestParam(required = true, value = "id") subtaskId: String
+    ): ResponseEntity<SubtaskDto> {
+        val response = subtaskService.getSubtask(subtaskId).toDto()
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
+    @PostMapping("subtask/result")
+    suspend fun setExecutionResult(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: SetExecutionResultRqDto
+    ): ResponseEntity<Unit> {
+        subtaskService.setExecutionResult(body.subtaskId, body.description)
+        return ResponseEntity(HttpStatus.OK)
     }
 
 

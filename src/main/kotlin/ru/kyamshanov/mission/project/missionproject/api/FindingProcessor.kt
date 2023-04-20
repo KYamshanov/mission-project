@@ -32,15 +32,15 @@ private class FindingProcessorImpl @Autowired constructor(
         val project = projectService.getProject(projectId)
         val tasks = taskService.getTasks(projectId)
         val timeRestriction = getTimeRestrictionUseCase(tasks)
-        val projectStageDto = getProjectStage(timeRestriction)
+        val projectStageDto = timeRestriction?.let { getProjectStage(it) } ?: ProjectStageDto.WAIT
         return ProjectInfoDto(
             id = requireNotNull(project.id) { "Project id cannot be null from received it" },
             title = project.title,
             description = project.description,
             tasks = tasks.map { it.toDto() },
             currentTask = getCurrentTaskUseCase(tasks)?.toDto(),
-            startAt = timeRestriction.startAt,
-            endAt = timeRestriction.endAt,
+            startAt = timeRestriction?.startAt,
+            endAt = timeRestriction?.endAt,
             stage = projectStageDto
         )
     }

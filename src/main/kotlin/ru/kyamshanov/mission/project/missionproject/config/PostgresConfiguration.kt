@@ -17,9 +17,7 @@ import org.springframework.data.r2dbc.convert.R2dbcCustomConversions
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import ru.kyamshanov.mission.project.missionproject.entity.JsonMap
-import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
-import ru.kyamshanov.mission.project.missionproject.entity.ProjectStageType
+import ru.kyamshanov.mission.project.missionproject.entity.*
 import java.time.Duration
 
 
@@ -53,7 +51,8 @@ class PostgresConfiguration @Autowired constructor(
     private val jsonMapStringToMapConverter: Converter<Json, JsonMap>,
     private val mapToJsonStringConverterMap: Converter<JsonMap, Json>,
     private val participantRoleConverter: Converter<ParticipantRole, ParticipantRole>,
-    private val projectStageTypeConverter: Converter<ProjectStageType, ProjectStageType>
+    private val projectStageTypeConverter: Converter<ProjectStageType, ProjectStageType>,
+    private val subtaskStageConverter: Converter<SubtaskStage, SubtaskStage>,
 ) : AbstractR2dbcConfiguration() {
 
     @Bean
@@ -70,6 +69,7 @@ class PostgresConfiguration @Autowired constructor(
                     EnumCodec.builder()
                         .withEnum("project_stage", ProjectStageType::class.java)
                         .withEnum("participants_role", ParticipantRole::class.java)
+                        .withEnum("subtasks_stage", SubtaskStage::class.java)
                         .build()
                 )
                 .build()
@@ -89,6 +89,7 @@ class PostgresConfiguration @Autowired constructor(
             add(mapToJsonStringConverterMap)
             add(participantRoleConverter)
             add(projectStageTypeConverter)
+            add(subtaskStageConverter)
         }.let {
             R2dbcCustomConversions(storeConversions, it)
         }
