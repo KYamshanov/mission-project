@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import ru.kyamshanov.mission.project.missionproject.api.EditProcessor
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
@@ -22,7 +23,8 @@ internal class ManagerProjectController @Autowired constructor(
     private val projectService: ProjectService,
     private val teamService: TeamService,
     private val stageService: ProjectStageService,
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val editProcessor: EditProcessor
 ) {
 
     @PostMapping("create")
@@ -77,34 +79,14 @@ internal class ManagerProjectController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-    /*
-        @PostMapping("stage")
-        suspend fun setStage(
-            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-            @RequestBody(required = true) body: SetStageRqDto
-        ): ResponseEntity<Unit> {
-            stageService.setProjectStage(body.projectId, ProjectStage(body.stage))
-            return ResponseEntity(HttpStatus.OK)
-        }
-
-        @GetMapping("stage")
-        suspend fun getStage(
-            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-            @RequestParam(required = true, value = "project") id: String
-        ): ResponseEntity<ProjectStageRsDto> {
-            val response = ProjectStageRsDto(stageService.getProjectStage(id).toDto())
-            return ResponseEntity(response, HttpStatus.OK)
-        }
-
-        @GetMapping("stage/history")
-        suspend fun getStageHistory(
-            @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-            @RequestParam(required = true, value = "project") id: String
-        ): ResponseEntity<HistoryRsDto> {
-            val response = HistoryRsDto(stageService.getStageHistory(id).map { it.toDto() })
-            return ResponseEntity(response, HttpStatus.OK)
-        }
-    */
+    @PostMapping("project/edit")
+    suspend fun editProject(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: EditProjectRqDto
+    ): ResponseEntity<CreateProjectRsDto> {
+        editProcessor.editProject(body)
+        return ResponseEntity(HttpStatus.OK)
+    }
 
     @PostMapping("task/create")
     suspend fun createTask(
@@ -122,9 +104,6 @@ internal class ManagerProjectController @Autowired constructor(
             stage = TaskStage.WAIT
         )
 
-
-        println("TaskModel ${body.startAt.month}  ${body.endAt.day}")
-
         val response = CreateTaskRsDto(
             taskId = requireNotNull(taskService.createTask(taskModel).id) { "Saved task (title: ${body.title} has id equal null." },
         )
@@ -137,6 +116,15 @@ internal class ManagerProjectController @Autowired constructor(
         @RequestBody(required = true) body: SetTaskPointsRqDto
     ): ResponseEntity<Unit> {
         taskService.setTaskPoints(body.taskId, body.points)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("task/edit")
+    suspend fun editTask(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: EditTaskRqDto
+    ): ResponseEntity<CreateProjectRsDto> {
+        editProcessor.editTask(body)
         return ResponseEntity(HttpStatus.OK)
     }
 
