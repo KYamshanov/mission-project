@@ -9,5 +9,7 @@ interface ParticipantCrudRepository : CoroutineCrudRepository<ParticipantEntity,
 
     fun findAllByProjectId(projectId: String): Flow<ParticipantEntity>
 
-    fun findFirstByProjectIdAndUserId(projectId: String, userId: String): Flow<ParticipantEntity>
+    suspend fun findFirstByProjectIdAndUserId(projectId: String, userId: String): ParticipantEntity?
+
+    fun findAllByProjectIdAndUserId(projectId: String, userId: String): Flow<ParticipantEntity>
 }

@@ -24,7 +24,7 @@ interface ProjectService {
 }
 
 @Service
-private class ProjectServiceImpl @Autowired constructor(
+class ProjectServiceImpl @Autowired constructor(
     private val projectCrudRepository: ProjectCrudRepository,
     private val projectRepository: ProjectRepository
 ) : ProjectService {

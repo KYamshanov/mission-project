@@ -13,7 +13,8 @@ data class ShortTaskDto(
     val startAt: LocalDateTime,
     @JsonFormat(pattern = "YYYY-MM-dd'T'hh:mm:ss")
     val endAt: LocalDateTime,
-    val points: Int?
+    val points: Int?,
+    val maxPoints: Int
 )
 
 fun ShortTaskModel.toDto() = ShortTaskDto(
@@ -23,5 +24,6 @@ fun ShortTaskModel.toDto() = ShortTaskDto(
     taskStage = taskStage.toDto(),
     startAt = startAt,
     endAt = endAt,
-    points = points
+    points = points,
+    maxPoints = maxPoints
 )

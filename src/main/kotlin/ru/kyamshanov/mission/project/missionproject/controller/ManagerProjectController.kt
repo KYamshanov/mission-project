@@ -110,21 +110,21 @@ internal class ManagerProjectController @Autowired constructor(
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    @PostMapping("task/set_points")
-    suspend fun setTaskPoint(
-        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-        @RequestBody(required = true) body: SetTaskPointsRqDto
-    ): ResponseEntity<Unit> {
-        taskService.setTaskPoints(body.taskId, body.points)
-        return ResponseEntity(HttpStatus.OK)
-    }
-
     @PostMapping("task/edit")
     suspend fun editTask(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestBody(required = true) body: EditTaskRqDto
     ): ResponseEntity<CreateProjectRsDto> {
         editProcessor.editTask(body)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("task/edit/set")
+    suspend fun editTaskSet(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: EditTaskSetRqDto
+    ): ResponseEntity<CreateProjectRsDto> {
+        editProcessor.editTasks(body)
         return ResponseEntity(HttpStatus.OK)
     }
 

@@ -1,6 +1,7 @@
 package ru.kyamshanov.mission.project.missionproject.api
 
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.dto.EditProjectRqDto
 import ru.kyamshanov.mission.project.missionproject.dto.EditTaskRqDto
 import ru.kyamshanov.mission.project.missionproject.models.*
@@ -13,10 +14,12 @@ interface EditProcessor {
     suspend fun editProject(request: EditProjectRqDto)
 
     suspend fun editTask(request: EditTaskRqDto)
+
+    suspend fun editTasks(request: List<EditTaskRqDto>)
 }
 
 @Component
-private class EditProcessorImpl(
+class EditProcessorImpl(
     private val projectService: ProjectService,
     private val taskService: TaskService,
 ) : EditProcessor {
@@ -56,6 +59,11 @@ private class EditProcessorImpl(
             maxPointsEdited = request.maxPoints != null
         )
         taskService.editTask(taskModel = model, editedScheme = editedScheme)
+    }
+
+    @Transactional
+    override suspend fun editTasks(request: List<EditTaskRqDto>) {
+        request.forEach { editTaskRqDto -> editTask(editTaskRqDto) }
     }
 
 }

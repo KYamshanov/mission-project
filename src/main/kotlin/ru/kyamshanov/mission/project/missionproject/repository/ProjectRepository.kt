@@ -10,8 +10,9 @@ import ru.kyamshanov.mission.project.missionproject.entity.ProjectEntity
 import ru.kyamshanov.mission.project.missionproject.models.PageIndex
 import ru.kyamshanov.mission.project.missionproject.models.ProjectEditingScheme
 import ru.kyamshanov.mission.project.missionproject.models.ProjectModel
+import ru.kyamshanov.mission.project.missionproject.models.UserId
 
-internal interface ProjectRepository {
+interface ProjectRepository {
 
     suspend fun findByName(name: String, pageIndex: PageIndex? = null): Flow<ProjectModel>
 

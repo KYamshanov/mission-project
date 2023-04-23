@@ -9,5 +9,6 @@ data class ShortTaskModel(
     val taskStage: TaskStage,
     val startAt: LocalDateTime,
     val endAt: LocalDateTime,
-    val points: Int?
+    val points: Int?,
+    val maxPoints: Int
 )

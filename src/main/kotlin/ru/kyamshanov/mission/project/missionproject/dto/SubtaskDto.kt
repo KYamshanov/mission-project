@@ -18,6 +18,8 @@ data class SubtaskDto(
     val stage: SubTaskStageDto,
     val executionResult: String?,
     val id: String,
+    val availableEdit: Boolean,
+    val availableSetResult: Boolean,
 )
 
 enum class SubTaskStageDto {
@@ -32,7 +34,10 @@ fun SubtaskModel.Stage.toDto(): SubTaskStageDto = when (this) {
     SubtaskModel.Stage.FINISHED -> SubTaskStageDto.FINISHED
 }
 
-fun SubtaskModel.toDto() = SubtaskDto(
+fun SubtaskModel.toDto(
+    availableEdit: Boolean,
+    availableSetResult: Boolean,
+) = SubtaskDto(
     taskId = taskId,
     title = title,
     description = description,
@@ -42,5 +47,7 @@ fun SubtaskModel.toDto() = SubtaskDto(
     responsible = responsible.toDto(),
     stage = stage.toDto(),
     executionResult = executionResult,
-    id = requireNotNull(id) { "Id cannot be null for DTO" }
+    id = requireNotNull(id) { "Id cannot be null for DTO" },
+    availableEdit = availableEdit,
+    availableSetResult = availableSetResult,
 )

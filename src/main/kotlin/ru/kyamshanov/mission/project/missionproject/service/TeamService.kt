@@ -45,7 +45,7 @@ class TeamServiceImpl @Autowired constructor(
     @Transactional
     override suspend fun addParticipant(projectId: String, participant: Participant) {
         val foundParticipant =
-            participantCrudRepository.findFirstByProjectIdAndUserId(projectId, participant.userInfo.userId).firstOrNull()
+            participantCrudRepository.findFirstByProjectIdAndUserId(projectId, participant.userInfo.userId)
         val savingEntity = ParticipantEntity(
             projectId = projectId,
             userId = participant.userInfo.userId,
