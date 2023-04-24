@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.kyamshanov.mission.project.missionproject.api.EditProcessor
+import ru.kyamshanov.mission.project.missionproject.processor.EditProcessor
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService

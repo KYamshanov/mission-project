@@ -43,7 +43,7 @@ data class GetTasksRsDto(
     val tasks: Collection<String>
 )
 
-fun TaskModel.toDto() = GetTaskRsDto(
+fun TaskModel.toDto(availableAddSubtask: Boolean) = GetTaskRsDto(
     id = requireNotNull(id),
     title = title,
     text = text,
@@ -52,5 +52,6 @@ fun TaskModel.toDto() = GetTaskRsDto(
     startAt = startAt,
     endAt = endAt,
     maxPoints = maxPoints,
-    points = points
+    points = points,
+    availableAddSubtask = availableAddSubtask
 )

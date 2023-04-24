@@ -8,13 +8,13 @@ import ru.kyamshanov.mission.project.missionproject.models.UserId
 import ru.kyamshanov.mission.project.missionproject.repository.ParticipantCrudRepository
 import ru.kyamshanov.mission.project.missionproject.repository.SubTaskCrudRepository
 
-internal interface AvailabilityService {
+interface AvailabilityService {
 
     suspend fun availableCreationSubtask(userId: UserId, projectId: String): Boolean
 
-    suspend fun availableEditSubtask(userId: UserId, projectId: String): Boolean
+    suspend fun availableEditSubtask(userId: UserId, taskId: String): Boolean
 
-    suspend fun availableSetExecutionResult(userId: UserId, subtask: SubTaskEntity): Boolean
+    suspend fun availableSetExecutionResult(userId: UserId, subtaskId: String): Boolean
 }
 
 @Service
@@ -28,11 +28,15 @@ private class AvailabilityServiceImpl(
         return roles.contains(ParticipantRole.LEADER)
     }
 
-    override suspend fun availableEditSubtask(userId: UserId, projectId: String): Boolean =
-        availableCreationSubtask(userId, projectId)
+    override suspend fun availableEditSubtask(userId: UserId, taskId: String): Boolean {
+        val roles = participantCrudRepository.findAllByTaskIdAndUserId(userId = userId, taskId = taskId)
+            .toCollection(mutableListOf()).mapNotNull { it.role }
+        return roles.contains(ParticipantRole.LEADER)
+    }
 
-    override suspend fun availableSetExecutionResult(userId: UserId, subtask: SubTaskEntity): Boolean {
-        return subtask.responsible == userId
+    override suspend fun availableSetExecutionResult(userId: UserId, subtaskId: String): Boolean {
+        val subtask = subtaskCrudRepository.findById(subtaskId)
+        return subtask?.responsible == userId
     }
 
 }

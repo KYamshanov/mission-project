@@ -1,4 +1,4 @@
-package ru.kyamshanov.mission.project.missionproject.api
+package ru.kyamshanov.mission.project.missionproject.processor
 
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.kyamshanov.mission.project.missionproject.api.FindingProcessor
-import ru.kyamshanov.mission.project.missionproject.api.SubtaskCreationProcessor
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.*
-import ru.kyamshanov.mission.project.missionproject.processor.LoadProcessor
-import ru.kyamshanov.mission.project.missionproject.processor.TeamProcessor
+import ru.kyamshanov.mission.project.missionproject.processor.*
+import ru.kyamshanov.mission.project.missionproject.processor.FindingProcessor
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
 import ru.kyamshanov.mission.project.missionproject.service.SubtaskService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
@@ -26,7 +24,9 @@ internal class PrivateProjectController @Autowired constructor(
     private val teamProcessor: TeamProcessor,
     private val taskService: TaskService,
     private val subtaskService: SubtaskService,
-    private val subtaskCreationProcessor: SubtaskCreationProcessor
+    private val subtaskCreationProcessor: SubtaskCreationProcessor,
+    private val taskProcessor: TaskProcessor,
+    private val subtaskProcessor: SubtaskProcessor
 ) {
 
     @PostMapping("get/all")
@@ -62,20 +62,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestParam(required = true, value = "task") taskId: String
     ): ResponseEntity<GetTaskRsDto> {
-        val response = taskService.getTask(taskId)
-            .let { taskModel ->
-                GetTaskRsDto(
-                    title = taskModel.title,
-                    text = taskModel.text,
-                    createdAt = taskModel.createAt,
-                    taskStage = taskModel.stage.toDto(),
-                    startAt = taskModel.startAt,
-                    endAt = taskModel.endAt,
-                    maxPoints = taskModel.maxPoints,
-                    points = taskModel.points,
-                    id = requireNotNull(taskModel.id)
-                )
-            }
+        val response = taskProcessor.getTask(userId, taskId)
         return ResponseEntity(response, HttpStatus.OK)
     }
 
@@ -94,7 +81,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestBody(required = true) body: CreateSubTaskRqDto
     ): ResponseEntity<CreateSubTaskRsDto> {
-        val response = subtaskCreationProcessor.createSubtask(body)
+        val response = subtaskCreationProcessor.createSubtask(userId, body)
         return ResponseEntity(response, HttpStatus.OK)
     }
 
@@ -103,8 +90,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestParam(required = true, value = "taskId") taskId: String
     ): ResponseEntity<GetSubTaskRsDto> {
-        val subtasksList = subtaskService.getSubTasks(taskId)
-        val response = GetSubTaskRsDto(subtasksList.map { it.toDto() })
+        val response = subtaskProcessor.getSubtasks(userId, taskId)
         return ResponseEntity(response, HttpStatus.OK)
     }
 
@@ -113,7 +99,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestParam(required = true, value = "id") subtaskId: String
     ): ResponseEntity<SubtaskDto> {
-        val response = subtaskService.getSubtask(subtaskId).toDto()
+        val response = subtaskProcessor.getSubtask(userId, subtaskId)
         return ResponseEntity(response, HttpStatus.OK)
     }
 
@@ -122,7 +108,7 @@ internal class PrivateProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestBody(required = true) body: SetExecutionResultRqDto
     ): ResponseEntity<Unit> {
-        subtaskService.setExecutionResult(body.subtaskId, body.description)
+        subtaskService.setExecutionResult(userId, body.subtaskId, body.description)
         return ResponseEntity(HttpStatus.OK)
     }
 

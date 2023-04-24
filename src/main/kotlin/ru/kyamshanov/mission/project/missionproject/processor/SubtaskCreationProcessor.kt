@@ -1,15 +1,16 @@
-package ru.kyamshanov.mission.project.missionproject.api
+package ru.kyamshanov.mission.project.missionproject.processor
 
 import org.springframework.stereotype.Component
 import ru.kyamshanov.mission.project.missionproject.dto.CreateSubTaskRqDto
 import ru.kyamshanov.mission.project.missionproject.dto.CreateSubTaskRsDto
 import ru.kyamshanov.mission.project.missionproject.models.SubtaskModel
+import ru.kyamshanov.mission.project.missionproject.models.UserId
 import ru.kyamshanov.mission.project.missionproject.network.usecase.FetchUsersUseCase
 import ru.kyamshanov.mission.project.missionproject.service.SubtaskService
 
 interface SubtaskCreationProcessor {
 
-    suspend fun createSubtask(request: CreateSubTaskRqDto): CreateSubTaskRsDto
+    suspend fun createSubtask(requester: UserId, request: CreateSubTaskRqDto): CreateSubTaskRsDto
 }
 
 
@@ -18,7 +19,7 @@ private class SubtaskCreationProcessorImpl(
     private val fetchUsersUseCase: FetchUsersUseCase,
     private val subtaskService: SubtaskService,
 ) : SubtaskCreationProcessor {
-    override suspend fun createSubtask(request: CreateSubTaskRqDto): CreateSubTaskRsDto {
+    override suspend fun createSubtask(requester: UserId, request: CreateSubTaskRqDto): CreateSubTaskRsDto {
         val foundUser = fetchUsersUseCase.fetchUser(request.responsible)
 
         val subtaskModel = SubtaskModel(
@@ -30,7 +31,7 @@ private class SubtaskCreationProcessorImpl(
             responsible = foundUser.getOrThrow(),
             stage = SubtaskModel.Stage.CREATED
         )
-        val createdSubtaskModel = subtaskService.create(subtaskModel)
+        val createdSubtaskModel = subtaskService.create(requester, subtaskModel)
         return CreateSubTaskRsDto(requireNotNull(createdSubtaskModel.id) { "Id cannot be null after save in db" })
     }
 
