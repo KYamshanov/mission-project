@@ -17,4 +17,7 @@ interface ParticipantCrudRepository : CoroutineCrudRepository<ParticipantEntity,
 
     @Query("SELECT participants.project_id, participants.external_user_id, participants.participant_role, participants.id FROM tasks JOIN projects ON tasks.project_id = projects.id  JOIN participants ON participants.project_id = projects.id  WHERE participants.external_user_id = :userId AND tasks.id = :taskId")
     fun findAllByTaskIdAndUserId(userId: UserId, taskId : String) : Flow<ParticipantEntity>
+
+    @Query("SELECT participants.project_id, participants.external_user_id, participants.participant_role, participants.id FROM subtasks JOIN tasks ON subtasks.task_id = tasks.id JOIN projects ON tasks.project_id = projects.id JOIN participants ON participants.project_id = projects.id  WHERE participants.external_user_id = :userId AND subtasks.id = :subtaskId")
+    fun findAllBySubtaskIdAndUserId(userId: UserId, subtaskId : String) : Flow<ParticipantEntity>
 }

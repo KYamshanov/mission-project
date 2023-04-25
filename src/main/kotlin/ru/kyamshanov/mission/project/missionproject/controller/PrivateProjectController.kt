@@ -26,7 +26,8 @@ internal class PrivateProjectController @Autowired constructor(
     private val subtaskService: SubtaskService,
     private val subtaskCreationProcessor: SubtaskCreationProcessor,
     private val taskProcessor: TaskProcessor,
-    private val subtaskProcessor: SubtaskProcessor
+    private val subtaskProcessor: SubtaskProcessor,
+    private val editProcessor: EditProcessor,
 ) {
 
     @PostMapping("get/all")
@@ -103,12 +104,12 @@ internal class PrivateProjectController @Autowired constructor(
         return ResponseEntity(response, HttpStatus.OK)
     }
 
-    @PostMapping("subtask/result")
-    suspend fun setExecutionResult(
+    @PostMapping("subtask/edit")
+    suspend fun editSubtask(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
-        @RequestBody(required = true) body: SetExecutionResultRqDto
+        @RequestBody(required = true) body: EditSubtaskRqDto
     ): ResponseEntity<Unit> {
-        subtaskService.setExecutionResult(userId, body.subtaskId, body.description)
+        editProcessor.editSubtask(userId, body)
         return ResponseEntity(HttpStatus.OK)
     }
 

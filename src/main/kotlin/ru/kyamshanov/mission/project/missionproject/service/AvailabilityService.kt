@@ -14,6 +14,9 @@ interface AvailabilityService {
 
     suspend fun availableEditSubtask(userId: UserId, taskId: String): Boolean
 
+    suspend fun availableEditSubtaskBySubtaskId(userId: UserId, subtaskId: String): Boolean
+
+
     suspend fun availableSetExecutionResult(userId: UserId, subtaskId: String): Boolean
 }
 
@@ -30,6 +33,12 @@ private class AvailabilityServiceImpl(
 
     override suspend fun availableEditSubtask(userId: UserId, taskId: String): Boolean {
         val roles = participantCrudRepository.findAllByTaskIdAndUserId(userId = userId, taskId = taskId)
+            .toCollection(mutableListOf()).mapNotNull { it.role }
+        return roles.contains(ParticipantRole.LEADER)
+    }
+
+    override suspend fun availableEditSubtaskBySubtaskId(userId: UserId, subtaskId: String): Boolean {
+        val roles = participantCrudRepository.findAllBySubtaskIdAndUserId(userId = userId, subtaskId = subtaskId)
             .toCollection(mutableListOf()).mapNotNull { it.role }
         return roles.contains(ParticipantRole.LEADER)
     }

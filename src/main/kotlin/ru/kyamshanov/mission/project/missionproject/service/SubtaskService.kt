@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.converter.SuspendConverter
 import ru.kyamshanov.mission.project.missionproject.entity.SubTaskEntity
 import ru.kyamshanov.mission.project.missionproject.entity.toEntity
-import ru.kyamshanov.mission.project.missionproject.models.SubtaskModel
-import ru.kyamshanov.mission.project.missionproject.models.UserId
+import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.repository.SubTaskCrudRepository
+import ru.kyamshanov.mission.project.missionproject.repository.SubtaskRepository
 
 interface SubtaskService {
 
@@ -19,12 +19,13 @@ interface SubtaskService {
 
     suspend fun getSubtask(subtaskId: String): SubtaskModel
 
-    suspend fun setExecutionResult(requester: UserId, subtaskId: String, executionResult: String)
+    suspend fun editSubtask(requester: UserId, subtaskModel: SubtaskModel, editingScheme: SubtaskEditingScheme)
 }
 
 @Service
 private class SubtaskServiceImpl(
     private val subTaskCrudRepository: SubTaskCrudRepository,
+    private val subtaskRepository: SubtaskRepository,
     private val subtaskEntityConverter: SuspendConverter<SubTaskEntity, SubtaskModel>,
     private val availabilityService: AvailabilityService,
 ) : SubtaskService {
@@ -42,11 +43,19 @@ private class SubtaskServiceImpl(
 
 
     @Transactional
-    override suspend fun setExecutionResult(requester: UserId, subtaskId: String, executionResult: String) {
-        val updatedEntities =
-            subTaskCrudRepository.setExecutionResult(requester, subtaskId, executionResult)
-                .toCollection(mutableListOf())
-        if (updatedEntities.size != 1) throw IllegalStateException("The number of updated entities is not equal to 1")
+    override suspend fun editSubtask(
+        requester: UserId,
+        subTaskModel: SubtaskModel,
+        editingScheme: SubtaskEditingScheme
+    ) {
+        val subtaskId = requireNotNull(subTaskModel.id) { "SubtaskId was required" }
+        if (editingScheme.executionResultEdited) {
+            assert(availabilityService.availableSetExecutionResult(requester, subtaskId)) { "Editing is not allowed" }
+        }
+        if (editingScheme.editOnlyExecutionResult.not()) {
+            assert(availabilityService.availableEditSubtask(requester, subtaskId)) { "Editing is not allowed" }
+        }
+        subtaskRepository.updateSubtask(subTaskModel.toEntity(), editingScheme)
     }
 
 }

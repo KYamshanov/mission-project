@@ -34,6 +34,12 @@ fun SubtaskModel.Stage.toDto(): SubTaskStageDto = when (this) {
     SubtaskModel.Stage.FINISHED -> SubTaskStageDto.FINISHED
 }
 
+fun SubTaskStageDto.toDomain(): SubtaskModel.Stage = when (this) {
+    SubTaskStageDto.CREATED -> SubtaskModel.Stage.CREATED
+    SubTaskStageDto.IN_WORK -> SubtaskModel.Stage.IN_WORK
+    SubTaskStageDto.FINISHED -> SubtaskModel.Stage.FINISHED
+}
+
 fun SubtaskModel.toDto(
     availableEdit: Boolean,
     availableSetResult: Boolean,
