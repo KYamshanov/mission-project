@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.entity.*
 import ru.kyamshanov.mission.project.missionproject.exception.TaskException
-import ru.kyamshanov.mission.project.missionproject.models.LightTaskModel
-import ru.kyamshanov.mission.project.missionproject.models.ShortTaskModel
-import ru.kyamshanov.mission.project.missionproject.models.TaskModel
-import ru.kyamshanov.mission.project.missionproject.models.TaskStage
+import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.repository.ShortTaskCrudRepository
 import ru.kyamshanov.mission.project.missionproject.repository.TaskCrudRepository
+import ru.kyamshanov.mission.project.missionproject.repository.TaskRepository
 import java.time.LocalDateTime
 
 interface TaskService {
@@ -25,12 +23,15 @@ interface TaskService {
     suspend fun getTask(taskId: String): TaskModel
 
     suspend fun setTaskPoints(taskId: String, count: Int)
+
+    suspend fun editTask(taskModel: TaskModel, editedScheme: TaskEditingScheme)
 }
 
 @Service
 class TaskServiceImpl @Autowired constructor(
     private val taskCrudRepository: TaskCrudRepository,
-    private val shortTaskCrudRepository: ShortTaskCrudRepository
+    private val shortTaskCrudRepository: ShortTaskCrudRepository,
+    private val taskRepository: TaskRepository,
 ) : TaskService {
     override suspend fun createTask(taskModel: TaskModel): TaskModel =
         taskCrudRepository.save(taskModel.toEntity()).let { it.toModel(resolveStage(it)) }
@@ -50,6 +51,12 @@ class TaskServiceImpl @Autowired constructor(
     override suspend fun setTaskPoints(taskId: String, count: Int) {
         val updatedEntitiesCount = taskCrudRepository.setTaskPoints(taskId, count).toCollection(mutableListOf()).count()
         if (updatedEntitiesCount != 1) throw IllegalStateException("More or less than 1 object has been updated. [$updatedEntitiesCount]")
+    }
+
+    @Transactional
+    override suspend fun editTask(taskModel: TaskModel, editedScheme: TaskEditingScheme) {
+        val updatedEntities = taskRepository.updateTask(taskModel.toEntity(), editedScheme).toCollection(mutableListOf())
+        assert(updatedEntities.size == 1){ "Was saved less or more then 1 entity" }
     }
 
     private fun resolveStage(taskEntity: TaskEntity): TaskStage {

@@ -1,7 +1,6 @@
 package ru.kyamshanov.mission.project.missionproject.dto
 
-data class SetRoleRqDto(
+data class RemoveParticipantRqDto(
     val projectId: String,
     val userId: String,
-    val role : ParticipantDto.Role
 )

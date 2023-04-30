@@ -1,5 +1,7 @@
 package ru.kyamshanov.mission.project.missionproject.network.model
 
+import ru.kyamshanov.mission.project.missionproject.models.UserInfo
+
 
 typealias MappingRqDto = List<String>
 
@@ -9,7 +11,9 @@ data class MappingRsDto(
 
     data class UserInfo(
         val id: String,
-        val name: String?,
-        val age: Int?
+        val firstname: String?,
+        val lastname: String?,
+        val patronymic: String?,
+        val group: String?
     )
 }

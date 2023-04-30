@@ -1,13 +1,12 @@
-package ru.kyamshanov.mission.project.missionproject.api
+package ru.kyamshanov.mission.project.missionproject.processor
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import ru.kyamshanov.mission.project.missionproject.dto.FindProjectRsDto
 import ru.kyamshanov.mission.project.missionproject.dto.ProjectInfoDto
 import ru.kyamshanov.mission.project.missionproject.dto.ProjectStageDto
 import ru.kyamshanov.mission.project.missionproject.dto.toDto
-import ru.kyamshanov.mission.project.missionproject.models.ProjectStage
 import ru.kyamshanov.mission.project.missionproject.models.TimeRestriction
+import ru.kyamshanov.mission.project.missionproject.service.AvailabilityService
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
 import ru.kyamshanov.mission.project.missionproject.service.TeamService
@@ -38,7 +37,7 @@ private class FindingProcessorImpl @Autowired constructor(
             title = project.title,
             description = project.description,
             tasks = tasks.map { it.toDto() },
-            currentTask = getCurrentTaskUseCase(tasks)?.toDto(),
+            currentTask = getCurrentTaskUseCase(tasks)?.toDto(false),
             startAt = timeRestriction?.startAt,
             endAt = timeRestriction?.endAt,
             stage = projectStageDto

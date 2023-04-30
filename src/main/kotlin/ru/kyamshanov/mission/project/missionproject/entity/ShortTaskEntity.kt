@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Table
 import ru.kyamshanov.mission.project.missionproject.models.ShortTaskModel
 import ru.kyamshanov.mission.project.missionproject.models.TaskStage
 import java.time.LocalDateTime
+import kotlin.math.max
 
 @Table("tasks")
 data class ShortTaskEntity(
@@ -21,6 +22,8 @@ data class ShortTaskEntity(
     val endAt: LocalDateTime,
     @Column("points")
     val points: Int,
+    @Column("max_points")
+    val maxPoints: Int,
     @Id
     @Column("id")
     private val givenId: String? = null
@@ -33,5 +36,6 @@ fun ShortTaskEntity.toDomain(taskStage: TaskStage) = ShortTaskModel(
     taskStage = taskStage,
     startAt = startAt,
     endAt = endAt,
-    points = points.takeIf { it > 0 }
+    points = points.takeIf { it > 0 },
+    maxPoints = maxPoints
 )
