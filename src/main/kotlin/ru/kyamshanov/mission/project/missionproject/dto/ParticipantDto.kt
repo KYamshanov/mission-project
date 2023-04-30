@@ -9,7 +9,7 @@ data class ParticipantDto(
 ) {
 
     enum class Role {
-        PARTICIPANT, LEADER
+        PARTICIPANT, LEADER, MENTOR
     }
 }
 
@@ -19,7 +19,14 @@ internal fun Participant.toDto() = ParticipantDto(
     role = role.toDto()
 )
 
+internal fun ParticipantDto.Role.toDomain(): Participant.Role = when (this) {
+    ParticipantDto.Role.PARTICIPANT -> Participant.Role.PARTICIPANT
+    ParticipantDto.Role.LEADER -> Participant.Role.LEADER
+    ParticipantDto.Role.MENTOR -> Participant.Role.MENTOR
+}
+
 private fun Participant.Role.toDto() = when (this) {
     Participant.Role.PARTICIPANT -> ParticipantDto.Role.PARTICIPANT
     Participant.Role.LEADER -> ParticipantDto.Role.LEADER
+    Participant.Role.MENTOR -> ParticipantDto.Role.MENTOR
 }

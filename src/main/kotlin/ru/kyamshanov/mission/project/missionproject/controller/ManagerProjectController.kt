@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import ru.kyamshanov.mission.project.missionproject.processor.EditProcessor
 import ru.kyamshanov.mission.project.missionproject.dto.*
 import ru.kyamshanov.mission.project.missionproject.models.*
+import ru.kyamshanov.mission.project.missionproject.processor.RoleProcessor
 import ru.kyamshanov.mission.project.missionproject.service.ProjectService
 import ru.kyamshanov.mission.project.missionproject.service.ProjectStageService
 import ru.kyamshanov.mission.project.missionproject.service.TaskService
@@ -24,7 +25,8 @@ internal class ManagerProjectController @Autowired constructor(
     private val teamService: TeamService,
     private val stageService: ProjectStageService,
     private val taskService: TaskService,
-    private val editProcessor: EditProcessor
+    private val editProcessor: EditProcessor,
+    private val roleProcessor: RoleProcessor,
 ) {
 
     @PostMapping("create")
@@ -69,10 +71,38 @@ internal class ManagerProjectController @Autowired constructor(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
         @RequestBody(required = true) body: SetRoleRqDto
     ): ResponseEntity<Unit> {
+        roleProcessor.setRole(
+            projectId = body.projectId,
+            userId = body.userId,
+            role = body.role.toDomain()
+        )
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("participant/add")
+    suspend fun addParticipant(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: AddParticipantRqDto
+    ): ResponseEntity<Unit> {
         teamService.addParticipant(
             projectId = body.projectId,
             participant = Participant(
-                role = body.role,
+                role = body.role.toDomain(),
+                userInfo = UserInfo(userId = body.userId, userName = "")
+            )
+        )
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @PostMapping("participant/remove")
+    suspend fun removeParticipant(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,
+        @RequestBody(required = true) body: RemoveParticipantRqDto
+    ): ResponseEntity<Unit> {
+        teamService.removeParticipant(
+            projectId = body.projectId,
+            participant = Participant(
+                role = Participant.Role.PARTICIPANT,
                 userInfo = UserInfo(userId = body.userId, userName = "")
             )
         )

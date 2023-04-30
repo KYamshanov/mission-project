@@ -4,10 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import ru.kyamshanov.mission.project.missionproject.entity.ParticipantEntity
+import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
+import ru.kyamshanov.mission.project.missionproject.models.Participant
 import ru.kyamshanov.mission.project.missionproject.models.UserId
 
 interface ParticipantCrudRepository : CoroutineCrudRepository<ParticipantEntity, String> {
     suspend fun removeAllByProjectId(projectId: String)
+
+    suspend fun removeAllByProjectIdAndUserId(projectId: String, userId: String)
 
     fun findAllByProjectId(projectId: String): Flow<ParticipantEntity>
 
@@ -16,8 +20,13 @@ interface ParticipantCrudRepository : CoroutineCrudRepository<ParticipantEntity,
     fun findAllByProjectIdAndUserId(projectId: String, userId: String): Flow<ParticipantEntity>
 
     @Query("SELECT participants.project_id, participants.external_user_id, participants.participant_role, participants.id FROM tasks JOIN projects ON tasks.project_id = projects.id  JOIN participants ON participants.project_id = projects.id  WHERE participants.external_user_id = :userId AND tasks.id = :taskId")
-    fun findAllByTaskIdAndUserId(userId: UserId, taskId : String) : Flow<ParticipantEntity>
+    fun findAllByTaskIdAndUserId(userId: UserId, taskId: String): Flow<ParticipantEntity>
 
     @Query("SELECT participants.project_id, participants.external_user_id, participants.participant_role, participants.id FROM subtasks JOIN tasks ON subtasks.task_id = tasks.id JOIN projects ON tasks.project_id = projects.id JOIN participants ON participants.project_id = projects.id  WHERE participants.external_user_id = :userId AND subtasks.id = :subtaskId")
-    fun findAllBySubtaskIdAndUserId(userId: UserId, subtaskId : String) : Flow<ParticipantEntity>
+    fun findAllBySubtaskIdAndUserId(userId: UserId, subtaskId: String): Flow<ParticipantEntity>
+
+    fun findAllByProjectIdAndRole(projectId: String, role: ParticipantRole): Flow<ParticipantEntity>
+
+    @Query("UPDATE participants SET participant_role = :role WHERE external_user_id = :userId AND project_id = :projectId RETURNING *;")
+    fun setRole(projectId: String, userId: UserId, role: ParticipantRole?): Flow<ParticipantEntity>
 }

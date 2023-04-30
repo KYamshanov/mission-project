@@ -6,6 +6,6 @@ data class Participant(
 ) {
 
     enum class Role {
-        PARTICIPANT, LEADER
+        PARTICIPANT, LEADER, MENTOR
     }
 }

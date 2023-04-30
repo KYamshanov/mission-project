@@ -1,16 +1,15 @@
 package ru.kyamshanov.mission.project.missionproject.service
 
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toCollection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.kyamshanov.mission.project.missionproject.entity.ParticipantEntity
+import ru.kyamshanov.mission.project.missionproject.entity.ParticipantRole
 import ru.kyamshanov.mission.project.missionproject.entity.toEntity
 import ru.kyamshanov.mission.project.missionproject.entity.toModel
 import ru.kyamshanov.mission.project.missionproject.models.Participant
 import ru.kyamshanov.mission.project.missionproject.models.Team
-import ru.kyamshanov.mission.project.missionproject.models.UserId
 import ru.kyamshanov.mission.project.missionproject.network.usecase.FetchUsersUseCase
 import ru.kyamshanov.mission.project.missionproject.repository.ParticipantCrudRepository
 
@@ -21,6 +20,12 @@ interface TeamService {
     suspend fun getTeam(projectId: String): Team
 
     suspend fun addParticipant(projectId: String, participant: Participant)
+
+    suspend fun setLeader(projectId: String, participant: Participant)
+    suspend fun setMentor(projectId: String, participant: Participant)
+    suspend fun setRole(projectId: String, participant: Participant, role: Participant.Role)
+
+    suspend fun removeParticipant(projectId: String, participant: Participant)
 }
 
 @Service
@@ -54,5 +59,59 @@ class TeamServiceImpl @Autowired constructor(
             givenId = foundParticipant?.id
         )
         participantCrudRepository.save(savingEntity)
+    }
+
+    @Transactional
+    override suspend fun setLeader(projectId: String, participant: Participant) {
+        participantCrudRepository.findAllByProjectIdAndRole(projectId, ParticipantRole.LEADER)
+            .toCollection(mutableListOf())
+            .map { it.copy(role = null) }
+            .also {
+                participantCrudRepository.saveAll(it).toCollection(mutableListOf())
+                    .also { saved -> assert(it.size == saved.size) { "Not all entities were saved" } }
+            }
+        participantCrudRepository.setRole(
+            projectId = projectId,
+            userId = participant.userInfo.userId,
+            role = ParticipantRole.LEADER
+        ).toCollection(mutableListOf())
+            .also { assert(it.size == 1) { "Entity was updated with exception" } }
+    }
+
+    @Transactional
+    override suspend fun setMentor(projectId: String, participant: Participant) {
+        participantCrudRepository.findAllByProjectIdAndRole(projectId, ParticipantRole.MENTOR)
+            .toCollection(mutableListOf())
+            .map { it.copy(role = null) }
+            .also {
+                participantCrudRepository.saveAll(it).toCollection(mutableListOf())
+                    .also { saved -> assert(it.size == saved.size) { "Not all entities were saved" } }
+            }
+        participantCrudRepository.setRole(
+            projectId = projectId,
+            userId = participant.userInfo.userId,
+            role = ParticipantRole.MENTOR
+        ).toCollection(mutableListOf())
+            .also {
+                println(it)
+                assert(it.size == 1)
+                { "Entity was updated with exception" }
+            }
+    }
+
+    override suspend fun setRole(projectId: String, participant: Participant, role: Participant.Role) {
+        participantCrudRepository.setRole(
+            projectId = projectId,
+            userId = participant.userInfo.userId,
+            role = role.toEntity()
+        ).toCollection(mutableListOf())
+            .also { assert(it.size == 1) { "Entity was updated with exception" } }
+    }
+
+    override suspend fun removeParticipant(projectId: String, participant: Participant) {
+        participantCrudRepository.removeAllByProjectIdAndUserId(
+            projectId = projectId,
+            userId = participant.userInfo.userId
+        )
     }
 }

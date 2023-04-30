@@ -21,6 +21,7 @@ fun Participant.toEntity(projectId: String, id: String? = null) = ParticipantEnt
 fun Participant.Role.toEntity(): ParticipantRole? = when (this) {
     Participant.Role.PARTICIPANT -> null
     Participant.Role.LEADER -> ParticipantRole.LEADER
+    Participant.Role.MENTOR -> ParticipantRole.MENTOR
 }
 
 fun ProjectStage.Stage.toType(): ProjectStageType = when (this) {
@@ -71,6 +72,7 @@ fun ProjectEntity.toCreatedProjectInfo() = ShortProjectInfo(
 
 fun ParticipantRole?.toModel(): Participant.Role = when (this) {
     ParticipantRole.LEADER -> Participant.Role.LEADER
+    ParticipantRole.MENTOR -> Participant.Role.MENTOR
     null -> Participant.Role.PARTICIPANT
 }
 
