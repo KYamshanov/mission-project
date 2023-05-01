@@ -30,6 +30,14 @@ internal class PrivateProjectController @Autowired constructor(
     private val editProcessor: EditProcessor,
 ) {
 
+    @GetMapping("get/attached")
+    suspend fun getAttachedProjects(
+        @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String
+    ): ResponseEntity<GetAttachedProjectsRsDto> {
+        val response = GetAttachedProjectsRsDto(projectService.getAttachedProjects(userId).map { it.toDto() })
+        return ResponseEntity(response, HttpStatus.OK)
+    }
+
     @PostMapping("get/all")
     suspend fun loadProjects(
         @RequestHeader(value = USER_ID_HEADER_KEY, required = true) userId: String,

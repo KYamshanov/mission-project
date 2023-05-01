@@ -23,7 +23,7 @@ interface SubtaskService {
 }
 
 @Service
-private class SubtaskServiceImpl(
+class SubtaskServiceImpl(
     private val subTaskCrudRepository: SubTaskCrudRepository,
     private val subtaskRepository: SubtaskRepository,
     private val subtaskEntityConverter: SuspendConverter<SubTaskEntity, SubtaskModel>,
@@ -56,6 +56,8 @@ private class SubtaskServiceImpl(
             assert(availabilityService.availableEditSubtask(requester, subtaskId)) { "Editing is not allowed" }
         }
         subtaskRepository.updateSubtask(subTaskModel.toEntity(), editingScheme)
+            .toCollection(mutableListOf())
+            .also { assert(it.size == 1) { "Was updated more or less than 1 entity" } }
     }
 
 }
