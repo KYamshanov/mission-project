@@ -15,7 +15,7 @@ import ru.kyamshanov.mission.project.missionproject.models.SubtaskEditingScheme
 
 interface SubtaskRepository {
 
-    suspend fun updateSubtask(subtaskEntity: SubTaskEntity, editedScheme: SubtaskEditingScheme): Flow<SubTaskEntity>
+    fun updateSubtask(subtaskEntity: SubTaskEntity, editedScheme: SubtaskEditingScheme): Flow<SubTaskEntity>
 }
 
 @Repository
@@ -24,7 +24,7 @@ private class SubtaskRepositoryImpl @Autowired constructor(
     private val converter: MappingR2dbcConverter
 ) : SubtaskRepository {
 
-    override suspend fun updateSubtask(
+    override fun updateSubtask(
         subtaskEntity: SubTaskEntity,
         editedScheme: SubtaskEditingScheme
     ): Flow<SubTaskEntity> {
@@ -34,7 +34,7 @@ private class SubtaskRepositoryImpl @Autowired constructor(
                 if (editedScheme.titleEdited) add("title" to subtaskEntity.title)
                 if (editedScheme.descriptionEdited) add("text" to subtaskEntity.text)
                 if (editedScheme.responsibleEdited) add("responsible" to subtaskEntity.responsible)
-                if (editedScheme.responsibleEdited) add("stage" to subtaskEntity.stage)
+                if (editedScheme.stateEdited) add("stage" to subtaskEntity.stage)
                 if (editedScheme.executionResultEdited) add("execution_result" to subtaskEntity.executionResult)
             }.let { list ->
                 list.forEachIndexed { index, s ->
