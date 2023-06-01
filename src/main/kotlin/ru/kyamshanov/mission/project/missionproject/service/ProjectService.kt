@@ -16,6 +16,8 @@ import ru.kyamshanov.mission.project.missionproject.models.*
 import ru.kyamshanov.mission.project.missionproject.repository.ProjectCrudRepository
 import ru.kyamshanov.mission.project.missionproject.repository.ProjectRepository
 import ru.kyamshanov.mission.project.missionproject.repository.ProjectRestrictedRepository
+import ru.kyamshanov.mission.project.missionproject.usecase.GetTaskStageUseCase
+import ru.kyamshanov.mission.project.missionproject.usecase.GetUserRoleUseCase
 
 interface ProjectService {
 
@@ -33,7 +35,8 @@ class ProjectServiceImpl @Autowired constructor(
     private val projectCrudRepository: ProjectCrudRepository,
     private val projectRepository: ProjectRepository,
     private val projectRestrictedRepository: ProjectRestrictedRepository,
-    private val projectRestrictedConverter: Converter<ProjectRestrictedEntity, ProjectRestrictedModel>
+    private val getTaskStageUseCase: GetTaskStageUseCase,
+    private val getUserRoleUseCase: GetUserRoleUseCase,
 ) : ProjectService {
     override suspend fun createProject(projectModel: ProjectModel): ShortProjectInfo =
         projectCrudRepository.save(projectModel.toEntity()).toCreatedProjectInfo()
@@ -49,5 +52,20 @@ class ProjectServiceImpl @Autowired constructor(
     }
 
     override suspend fun getAttachedProjects(userId: UserId): List<ProjectRestrictedModel> =
-        projectRestrictedRepository.getUserProjects(userId).mapNotNull { projectRestrictedConverter.convert(it) }.toCollection(mutableListOf())
+        projectRestrictedRepository.getUserProjects(userId).mapNotNull { it.toModel(userId) }
+            .toCollection(mutableListOf())
+
+
+    private suspend fun ProjectRestrictedEntity.toModel(userId: UserId): ProjectRestrictedModel {
+        val taskStage = getTaskStageUseCase(startAt, endAt)
+        return ProjectRestrictedModel(
+            projectId = projectId,
+            title = title,
+            description = description,
+            startAt = startAt,
+            endAt = endAt,
+            stage = taskStage,
+            userRole = getUserRoleUseCase.invoke(userId, projectId)
+        )
+    }
 }

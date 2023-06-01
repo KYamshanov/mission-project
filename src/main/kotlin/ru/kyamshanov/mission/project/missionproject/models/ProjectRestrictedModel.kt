@@ -8,5 +8,6 @@ data class ProjectRestrictedModel(
     val description: String,
     val startAt: LocalDateTime,
     val endAt: LocalDateTime,
-    val stage: TaskStage
+    val stage: TaskStage,
+    val userRole: Participant.Role
 )
