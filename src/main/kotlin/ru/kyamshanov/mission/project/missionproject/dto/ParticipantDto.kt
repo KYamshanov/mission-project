@@ -25,7 +25,7 @@ internal fun ParticipantDto.Role.toDomain(): Participant.Role = when (this) {
     ParticipantDto.Role.MENTOR -> Participant.Role.MENTOR
 }
 
-private fun Participant.Role.toDto() = when (this) {
+internal fun Participant.Role.toDto() = when (this) {
     Participant.Role.PARTICIPANT -> ParticipantDto.Role.PARTICIPANT
     Participant.Role.LEADER -> ParticipantDto.Role.LEADER
     Participant.Role.MENTOR -> ParticipantDto.Role.MENTOR
